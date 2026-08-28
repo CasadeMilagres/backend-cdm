@@ -60,8 +60,17 @@ def enviar_whatsapp_view(request):
 
     try:
         response = requests.post(url, json=payload, headers=headers)
-        return Response({"success": True})
+        
+        # Valida se a Evolution API aceitou o envio (200 ou 201)
+        if response.status_code in [200, 201]:
+            return Response({"success": True, "data": response.json()})
+        else:
+            # Imprime o motivo real da rejeição no log do servidor
+            print(f"❌ Erro Evolution API ({response.status_code}): {response.text}")
+            return Response({"error": "Falha no envio do WhatsApp", "details": response.text}, status=response.status_code)
+            
     except Exception as e:
+        print(f"❌ Exceção ao conectar na Evolution API: {str(e)}")
         return Response({"error": str(e)}, status=500)
 
 @api_view(['GET'])
