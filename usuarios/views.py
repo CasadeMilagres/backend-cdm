@@ -12,6 +12,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import CadastroGeral, GrupoConexao, FormularioAvulso
 from .serializers import CadastroGeralSerializer, UsuarioSerializer, GrupoConexaoSerializer, FormularioAvulsoSerializer
 from .models import IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala, FilaNotificacaoPush
+from .models import GcLancamentoSemanal, ConfiguracaoSistema
+from .serializers import GcLancamentoSemanalSerializer, ConfiguracaoSistemaSerializer
 from .serializers import (
     IdeModuloSerializer, IdeFormularioSerializer, IdeTurmaSerializer,
     IdeInscricaoSerializer, IdeSalaSerializer, FilaNotificacaoPushSerializer
@@ -63,6 +65,19 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 class GrupoConexaoViewSet(viewsets.ModelViewSet):
     queryset = GrupoConexao.objects.all().order_by('lider')
     serializer_class = GrupoConexaoSerializer
+
+class GcLancamentoSemanalViewSet(viewsets.ModelViewSet):
+    queryset = GcLancamentoSemanal.objects.all().order_by('-dataGc')
+    serializer_class = GcLancamentoSemanalSerializer
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['lider', 'bairro', 'usuarioResponsavel']
+
+class ConfiguracaoSistemaViewSet(viewsets.ModelViewSet):
+    queryset = ConfiguracaoSistema.objects.all()
+    serializer_class = ConfiguracaoSistemaSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'chave'
 
 class IdeModuloViewSet(viewsets.ModelViewSet):
     queryset = IdeModulo.objects.all().order_by('nome')

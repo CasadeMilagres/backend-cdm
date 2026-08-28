@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import CadastroGeral, GrupoConexao, FormularioAvulso
+from .models import CadastroGeral, FormularioAvulso
+from .models import GcLancamentoSemanal, ConfiguracaoSistema, GrupoConexao
 from .models import IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala, FilaNotificacaoPush
 
 class CadastroGeralSerializer(serializers.ModelSerializer):
@@ -18,6 +19,16 @@ class UsuarioSerializer(serializers.ModelSerializer):
 class GrupoConexaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrupoConexao
+        fields = '__all__'
+
+class GcLancamentoSemanalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GcLancamentoSemanal
+        fields = '__all__'
+
+class ConfiguracaoSistemaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConfiguracaoSistema
         fields = '__all__'
 
 class FormularioAvulsoSerializer(serializers.ModelSerializer):

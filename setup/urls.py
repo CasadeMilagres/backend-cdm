@@ -9,6 +9,8 @@ from usuarios.views import (
     CadastroGeralViewSet, 
     UsuarioViewSet, 
     GrupoConexaoViewSet,
+    GcLancamentoSemanalViewSet, 
+    ConfiguracaoSistemaViewSet,
     FormularioAvulsoViewSet,
     IdeModuloViewSet, IdeFormularioViewSet, IdeTurmaViewSet,
     IdeInscricaoViewSet, IdeSalaViewSet, FilaNotificacaoPushViewSet # Novo
@@ -19,6 +21,8 @@ router = DefaultRouter()
 router.register(r'cadastros', CadastroGeralViewSet, basename='cadastros')
 router.register(r'usuarios', UsuarioViewSet, basename='usuarios')
 router.register(r'grupos', GrupoConexaoViewSet, basename='grupos')
+router.register(r'gc_lancamentos', GcLancamentoSemanalViewSet, basename='gc_lancamentos')
+router.register(r'configuracoes', ConfiguracaoSistemaViewSet, basename='configuracoes')
 router.register(r'formularios_avulsos', FormularioAvulsoViewSet, basename='formularios_avulsos')
 router.register(r'ide_modulos', IdeModuloViewSet, basename='ide_modulos')
 router.register(r'ide_formularios', IdeFormularioViewSet, basename='ide_formularios')

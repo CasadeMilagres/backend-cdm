@@ -82,21 +82,57 @@ class FormularioAvulso(models.Model):
         return self.titulo
 
 class GrupoConexao(models.Model):
-    codigo = models.IntegerField(blank=True, null=True)
     nome = models.CharField(max_length=150)
     lider = models.CharField(max_length=150)
+    coLider = models.CharField(max_length=150, blank=True, null=True)
     lider_supervisor = models.CharField(max_length=150, blank=True, null=True)
     supervisor = models.CharField(max_length=150, blank=True, null=True)
     coordenador = models.CharField(max_length=150, blank=True, null=True)
+    anfitriao = models.CharField(max_length=150, blank=True, null=True)
+    telefoneLider = models.CharField(max_length=50, blank=True, null=True)
+    telefoneAnfitriao = models.CharField(max_length=50, blank=True, null=True)
     endereco = models.CharField(max_length=255, blank=True, null=True)
     numero = models.CharField(max_length=20, blank=True, null=True)
     bairro = models.CharField(max_length=100, blank=True, null=True)
     cep = models.CharField(max_length=20, blank=True, null=True)
     dia_gc = models.CharField(max_length=50, blank=True, null=True)
     horario = models.CharField(max_length=50, blank=True, null=True)
+    generoGc = models.CharField(max_length=50, default='Misto')
+    tipoGc = models.CharField(max_length=50, default='Família')
 
     def __str__(self):
-        return self.nome
+        return f"{self.nome} ({self.lider})"
+
+class GcLancamentoSemanal(models.Model):
+    grupoId = models.CharField(max_length=100, blank=True, null=True)
+    lider = models.CharField(max_length=150)
+    bairro = models.CharField(max_length=100, blank=True, null=True)
+    dataGc = models.DateField()
+    horario = models.CharField(max_length=50, blank=True, null=True)
+    statusGc = models.CharField(max_length=50, default='Ocorreu') # 'Ocorreu' ou 'Nao_Ocorreu'
+    motivoNaoOcorreu = models.TextField(blank=True, null=True)
+    membros = models.IntegerField(default=0)
+    membrosPresentesIds = models.JSONField(default=list, blank=True)
+    visitantes = models.IntegerField(default=0)
+    oferta = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    observacao = models.TextField(blank=True, null=True)
+    teveOracaoCura = models.CharField(max_length=10, blank=True, null=True)
+    qtdCurados = models.IntegerField(default=0)
+    testemunhoCura = models.TextField(blank=True, null=True)
+    imagemUrl = models.TextField(blank=True, null=True)
+    usuarioResponsavel = models.CharField(max_length=150, blank=True, null=True)
+    dataCadastro = models.DateTimeField(auto_now_add=True)
+    dataAtualizacao = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.lider} - {self.dataGc}"
+
+class ConfiguracaoSistema(models.Model):
+    chave = models.CharField(max_length=100, unique=True)
+    valor = models.JSONField(default=dict)
+
+    def __str__(self):
+        return self.chave
 
 class IdeModulo(models.Model):
     nome = models.CharField(max_length=255)
