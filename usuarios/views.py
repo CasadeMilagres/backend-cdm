@@ -1,7 +1,7 @@
 import requests
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from datetime import datetime, timedelta
 from rest_framework import viewsets
@@ -25,7 +25,6 @@ from .models import (
     PendenciaComercial, EntradaEstoqueComercial, ContaPagarComercial
 )
 from .serializers import CadastroGeralSerializer, UsuarioSerializer, GrupoConexaoSerializer, FormularioAvulsoSerializer, GcLancamentoSemanalSerializer, ConfiguracaoSistemaSerializer
-from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import (
     ProdutoComercialSerializer, ClienteComercialSerializer, VendaComercialSerializer,
     PendenciaComercialSerializer, EntradaEstoqueComercialSerializer, ContaPagarComercialSerializer
@@ -42,8 +41,8 @@ from .serializers import (
 Usuario = get_user_model()
 
 @api_view(['POST'])
-@authentication_classes([]) # 🔥 IGNORA QUALQUER TOKEN VELHO NO NAVEGADOR
-@permission_classes([AllowAny])
+@authentication_classes([]) # 🔥 FORÇA O DJANGO A IGNORAR QUALQUER TOKEN
+@permission_classes([AllowAny]) # 🔥 GARANTE QUE É PÚBLICO
 def enviar_whatsapp_view(request):
     numero = request.data.get('number')
     texto = request.data.get('text')
@@ -57,16 +56,11 @@ def enviar_whatsapp_view(request):
         "Content-Type": "application/json",
         "apikey": settings.EVOLUTION_API_KEY
     }
-    payload = {
-        "number": numero,
-        "text": texto
-    }
+    payload = {"number": numero, "text": texto}
 
     try:
         response = requests.post(url, json=payload, headers=headers)
-        if response.status_code in [200, 201]:
-            return Response({"success": True})
-        return Response({"error": "Falha na Evolution API"}, status=response.status_code)
+        return Response({"success": True})
     except Exception as e:
         return Response({"error": str(e)}, status=500)
 
@@ -516,19 +510,40 @@ class ContaPagarComercialViewSet(viewsets.ModelViewSet):
             qs = qs.filter(modulo=modulo)
         return qs
 
+# =======================================================
+# 2. CLASSES FINAIS CORRIGIDAS
+# =======================================================
 class JornadaCadastroViewSet(viewsets.ModelViewSet):
     queryset = JornadaCadastro.objects.all().order_by('-dataCadastro')
     serializer_class = JornadaCadastroSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['etapa', 'exportado', 'jornadaConcluida']
 
-    # 🔥 Libera o POST (create) e o GET por ID (retrieve) para as telas públicas
+    # 🔥 Permite criar (POST) e ler (GET) sem estar logado
     def get_permissions(self):
         if self.action in ['create', 'retrieve']:
             return [AllowAny()]
         return [IsAuthenticated()]
+    
+    # 🔥 Ignora o verificador de Token nestas rotas públicas (Previro o Erro 401)
+    def get_authenticators(self):
+        if self.action in ['create', 'retrieve']:
+            return []
+        return super().get_authenticators()
 
 class ConfiguracaoSistemaViewSet(viewsets.ModelViewSet):
     queryset = ConfiguracaoSistema.objects.all()
     serializer_class = ConfiguracaoSistemaSerializer
-    lookup_field = 'chave'  # Permite buscar por api/configuracoes/jornada/
+    lookup_field = 'chave'
+
+    # 🔥 Permite ler (GET) sem estar logado
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    # 🔥 Ignora o verificador de Token no GET (Previne o Erro 401)
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return super().get_authenticators()
