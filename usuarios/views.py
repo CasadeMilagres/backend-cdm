@@ -41,16 +41,26 @@ def perfil_usuario(request):
 
 
 class CadastroGeralViewSet(viewsets.ModelViewSet):
-    queryset = CadastroGeral.objects.all().order_by('-dataCadastro')
+    queryset = CadastroGeral.objects.all().order_by('nome')
     serializer_class = CadastroGeralSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['nome', 'celular', 'email', 'bairro', 'lider']
-    permission_classes = [AllowAny] 
+    search_fields = ['nome', 'celular', 'email', 'cpf']
+
+    # Adicione este bloco para liberar inscrições públicas
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 class FormularioAvulsoViewSet(viewsets.ModelViewSet):
-    queryset = FormularioAvulso.objects.all().order_by('-dataCriacao')
+    queryset = FormularioAvulso.objects.all()
     serializer_class = FormularioAvulsoSerializer
-    permission_classes = [AllowAny]
+
+    # Adicione este bloco para liberar a leitura do formulário
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
@@ -83,7 +93,14 @@ class IdeModuloViewSet(viewsets.ModelViewSet):
 class IdeFormularioViewSet(viewsets.ModelViewSet):
     queryset = IdeFormulario.objects.all().order_by('-dataCriacao')
     serializer_class = IdeFormularioSerializer
-    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['titulo', 'ciclo']
+
+    # Libera a leitura pública para que a Landing Page do IDE carregue os dados
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 class IdeTurmaViewSet(viewsets.ModelViewSet):
     queryset = IdeTurma.objects.all().order_by('nome')
@@ -93,9 +110,14 @@ class IdeTurmaViewSet(viewsets.ModelViewSet):
 class IdeInscricaoViewSet(viewsets.ModelViewSet):
     queryset = IdeInscricao.objects.all().order_by('-dataInscricao')
     serializer_class = IdeInscricaoSerializer
-    permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
-    search_fields = ['alunoNome', 'moduloNome', 'celular']
+    search_fields = ['alunoNome', 'celular', 'email']
+
+    # Libera a criação pública para que o visitante possa salvar sua matrícula
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 class IdeSalaViewSet(viewsets.ModelViewSet):
     queryset = IdeSala.objects.all().order_by('-data')
