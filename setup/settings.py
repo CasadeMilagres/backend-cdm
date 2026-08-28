@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # Deve estar no topo!
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Adicione esta linha
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -87,12 +88,11 @@ WSGI_APPLICATION = 'setup.wsgi.application'
 # Lê a URL do banco PostgreSQL da nuvem, ou usa o SQLite local se estiver no seu PC
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        # COLOQUE A URL EXTERNA AQUI NOVAMENTE
+        default='postgresql://cdm_db_qilh_user:23HBVYgiRmNEdZfBeergMoSVTOqlorO2@dpg-da8c9qjtqb8s739pnf70-a.oregon-postgres.render.com/cdm_db_qilh',
         conn_max_age=600
     )
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
 

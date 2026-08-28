@@ -46,22 +46,40 @@ class Usuario(AbstractUser):
 
 class CadastroGeral(models.Model):
     nome = models.CharField(max_length=255)
-    celular = models.CharField(max_length=20)
+    cpf = models.CharField(max_length=20, blank=True, null=True)
+    celular = models.CharField(max_length=20, blank=True, null=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
-    sexo = models.CharField(max_length=20)
+    email = models.EmailField(max_length=254, blank=True, null=True)
+    sexo = models.CharField(max_length=20, blank=True, null=True)
     dataNasc = models.DateField(blank=True, null=True)
     estadoCivil = models.CharField(max_length=50, blank=True, null=True)
     endereco = models.CharField(max_length=255, blank=True, null=True)
+    numero = models.CharField(max_length=20, blank=True, null=True)
     cep = models.CharField(max_length=20, blank=True, null=True)
     bairro = models.CharField(max_length=100, blank=True, null=True)
     lider = models.CharField(max_length=255, blank=True, null=True)
     gc = models.CharField(max_length=255, blank=True, null=True)
     isLider = models.CharField(max_length=10, default='Não')
-    dataCadastro = models.DateTimeField(auto_now_add=True)
+    
+    # Controle de Landing Pages (Formulários Avulsos)
+    origemFormularioId = models.CharField(max_length=100, blank=True, null=True)
+    origemFormularioNome = models.CharField(max_length=255, blank=True, null=True)
+    respostasCustomizadas = models.JSONField(default=list, blank=True, null=True)
+    dataCadastro = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return self.nome
+
+class FormularioAvulso(models.Model):
+    titulo = models.CharField(max_length=255)
+    bannerUrl = models.URLField(max_length=1000, blank=True, null=True)
+    configuracaoCampos = models.JSONField(default=dict)
+    perguntasCustomizadas = models.JSONField(default=list)
+    criadoPor = models.CharField(max_length=150, blank=True, null=True)
+    dataCriacao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titulo
 
 class GrupoConexao(models.Model):
     codigo = models.IntegerField(blank=True, null=True)

@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from .models import CadastroGeral
 from django.contrib.auth import get_user_model
-from .models import GrupoConexao
+from .models import CadastroGeral, GrupoConexao, FormularioAvulso
 
 class CadastroGeralSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,4 +17,9 @@ class UsuarioSerializer(serializers.ModelSerializer):
 class GrupoConexaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrupoConexao
+        fields = '__all__'
+
+class FormularioAvulsoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FormularioAvulso
         fields = '__all__'

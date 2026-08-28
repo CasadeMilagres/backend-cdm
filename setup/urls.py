@@ -8,7 +8,8 @@ from usuarios.views import (
     perfil_usuario, 
     CadastroGeralViewSet, 
     UsuarioViewSet, 
-    GrupoConexaoViewSet
+    GrupoConexaoViewSet,
+    FormularioAvulsoViewSet # Novo
 )
 
 # Roteador automatico do Django para CRUD completo (GET, POST, PUT, DELETE)
@@ -16,6 +17,7 @@ router = DefaultRouter()
 router.register(r'cadastros', CadastroGeralViewSet, basename='cadastros')
 router.register(r'usuarios', UsuarioViewSet, basename='usuarios')
 router.register(r'grupos', GrupoConexaoViewSet, basename='grupos')
+router.register(r'formularios_avulsos', FormularioAvulsoViewSet, basename='formularios_avulsos') # Novo
 
 urlpatterns = [
     path('admin/', admin.site.urls),

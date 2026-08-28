@@ -5,11 +5,14 @@ from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from django.contrib.auth import get_user_model
 
+
 # Aqui importamos todos os modelos que criamos no models.py
 from .models import CadastroGeral, GrupoConexao
 # E aqui os serializadores
 from .serializers import CadastroGeralSerializer, UsuarioSerializer, GrupoConexaoSerializer
-
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .models import CadastroGeral, GrupoConexao, FormularioAvulso
+from .serializers import CadastroGeralSerializer, UsuarioSerializer, GrupoConexaoSerializer, FormularioAvulsoSerializer
 Usuario = get_user_model()
 
 @api_view(['GET'])
@@ -39,7 +42,13 @@ class CadastroGeralViewSet(viewsets.ModelViewSet):
     queryset = CadastroGeral.objects.all().order_by('-dataCadastro')
     serializer_class = CadastroGeralSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['nome', 'celular', 'email', 'bairro', 'lider'] 
+    search_fields = ['nome', 'celular', 'email', 'bairro', 'lider']
+    permission_classes = [AllowAny] 
+
+class FormularioAvulsoViewSet(viewsets.ModelViewSet):
+    queryset = FormularioAvulso.objects.all().order_by('-dataCriacao')
+    serializer_class = FormularioAvulsoSerializer
+    permission_classes = [AllowAny]
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
