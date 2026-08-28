@@ -97,3 +97,114 @@ class GrupoConexao(models.Model):
 
     def __str__(self):
         return self.nome
+
+class IdeModulo(models.Model):
+    nome = models.CharField(max_length=255)
+    duracaoNum = models.IntegerField(default=1)
+    duracaoTipo = models.CharField(max_length=50, default='Semanas')
+    perguntas = models.JSONField(default=list, blank=True)
+    limiteFaltas = models.IntegerField(default=3)
+    gradeCurricular = models.JSONField(default=list, blank=True)
+    dataCriacao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nome
+
+class IdeFormulario(models.Model):
+    moduloId = models.CharField(max_length=100)
+    titulo = models.CharField(max_length=255)
+    ciclo = models.CharField(max_length=100, blank=True, null=True)
+    bannerUrl = models.URLField(max_length=1000, blank=True, null=True)
+    linkWhatsapp = models.URLField(max_length=1000, blank=True, null=True)
+    status = models.CharField(max_length=50, default='Aberto')
+    dataInicio = models.DateField(blank=True, null=True)
+    horaInicio = models.CharField(max_length=20, blank=True, null=True)
+    dataTermino = models.DateField(blank=True, null=True)
+    horaTermino = models.CharField(max_length=20, blank=True, null=True)
+    perguntas = models.JSONField(default=list, blank=True)
+    dataCriacao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titulo
+
+class IdeTurma(models.Model):
+    nome = models.CharField(max_length=255)
+    codigoUnico = models.CharField(max_length=50, blank=True, null=True)
+    moduloId = models.CharField(max_length=100)
+    moduloNome = models.CharField(max_length=255, blank=True, null=True)
+    ciclo = models.CharField(max_length=100, blank=True, null=True)
+    professor = models.CharField(max_length=255, blank=True, null=True)
+    status = models.CharField(max_length=50, default='Ativa')
+    isEspera = models.BooleanField(default=False)
+    formularioId = models.CharField(max_length=100, blank=True, null=True)
+    diaInicio = models.DateField(blank=True, null=True)
+    horarioInicio = models.CharField(max_length=50, blank=True, null=True)
+    whatsappGrupo = models.URLField(max_length=1000, blank=True, null=True)
+    alunos = models.JSONField(default=list, blank=True)
+    removidos = models.JSONField(default=list, blank=True)
+    abonosReprovacao = models.JSONField(default=list, blank=True)
+    dataCriacao = models.DateTimeField(auto_now_add=True)
+    dataEncerramento = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.nome} ({self.moduloNome})"
+
+class IdeInscricao(models.Model):
+    formularioId = models.CharField(max_length=100, blank=True, null=True)
+    moduloId = models.CharField(max_length=100)
+    moduloNome = models.CharField(max_length=255, blank=True, null=True)
+    alunoId = models.CharField(max_length=100)
+    alunoNome = models.CharField(max_length=255)
+    celular = models.CharField(max_length=50, blank=True, null=True)
+    email = models.CharField(max_length=254, blank=True, null=True)
+    lider = models.CharField(max_length=255, blank=True, null=True)
+    gc = models.CharField(max_length=255, blank=True, null=True)
+    sexo = models.CharField(max_length=50, blank=True, null=True)
+    dataNascimento = models.CharField(max_length=50, blank=True, null=True)
+    estadoCivil = models.CharField(max_length=50, blank=True, null=True)
+    respostas = models.JSONField(default=dict, blank=True)
+    tipo = models.CharField(max_length=50, default='Formulário')
+    dataInscricao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.alunoNome} - {self.moduloNome}"
+
+class IdeSala(models.Model):
+    turmaId = models.CharField(max_length=100)
+    turmaNome = models.CharField(max_length=255, blank=True, null=True)
+    moduloId = models.CharField(max_length=100, blank=True, null=True)
+    tema = models.CharField(max_length=255)
+    data = models.CharField(max_length=50)
+    diaSemana = models.CharField(max_length=50, blank=True, null=True)
+    horarioInicio = models.CharField(max_length=50, blank=True, null=True)
+    horarioFim = models.CharField(max_length=50, blank=True, null=True)
+    status = models.CharField(max_length=50, default='Agendada')
+    presencas = models.JSONField(default=dict, blank=True)
+    justificativas = models.JSONField(default=dict, blank=True)
+    exercicioAtivo = models.BooleanField(default=False)
+    exercicioPerguntas = models.JSONField(default=list, blank=True)
+    notasExercicio = models.JSONField(default=dict, blank=True)
+    respostasExercicio = models.JSONField(default=dict, blank=True)
+    dataCriacao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.tema} - {self.turmaNome}"
+
+class FilaNotificacaoPush(models.Model):
+    tipo = models.CharField(max_length=100, default='comunicado_ensino')
+    turmaId = models.CharField(max_length=100, blank=True, null=True)
+    turmaNome = models.CharField(max_length=255, blank=True, null=True)
+    publicoAlvo = models.CharField(max_length=100, default='Todos')
+    alunoNome = models.CharField(max_length=255, blank=True, null=True)
+    alunoTelefone = models.CharField(max_length=50, blank=True, null=True)
+    usuariosSelecionadosIds = models.JSONField(default=list, blank=True)
+    titulo = models.CharField(max_length=255)
+    mensagem = models.TextField()
+    status = models.CharField(max_length=50, default='pendente')
+    sucessos = models.IntegerField(default=0)
+    falhas = models.IntegerField(default=0)
+    motivoErro = models.TextField(blank=True, null=True)
+    dataDisparo = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titulo
