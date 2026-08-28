@@ -244,3 +244,47 @@ class FilaNotificacaoPush(models.Model):
 
     def __str__(self):
         return self.titulo
+
+class Ministerio(models.Model):
+    nome = models.CharField(max_length=255)
+    # Guarda o array de nomes dos líderes: ["João", "Maria"]
+    lideres = models.JSONField(default=list, blank=True)
+    # Guarda o array de objetos das funções: [{"id": "xyz", "nome": "Baterista", "voluntarios": ["id1", "id2"]}]
+    funcoes = models.JSONField(default=list, blank=True)
+
+    class Meta:
+        db_table = 'ministerios'
+
+class Voluntario(models.Model):
+    cadastroId = models.CharField(max_length=255, blank=True, null=True)
+    nome = models.CharField(max_length=255)
+    telefone = models.CharField(max_length=20, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    sexo = models.CharField(max_length=50, blank=True, null=True)
+    liderGc = models.CharField(max_length=255, blank=True, null=True)
+    # Array com os IDs dos ministérios: ["1", "5"]
+    ministerios = models.JSONField(default=list, blank=True)
+    dataCadastro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'voluntarios'
+
+class EventoMinisterio(models.Model):
+    nome = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'eventos_ministerio'
+
+class EscalaMinisterio(models.Model):
+    ministerioId = models.CharField(max_length=255)
+    ministerioNome = models.CharField(max_length=255, blank=True, null=True)
+    data = models.DateField()
+    eventoId = models.CharField(max_length=255, blank=True, null=True)
+    evento = models.CharField(max_length=255, blank=True, null=True)
+    # Array de objetos: [{"voluntarioId": "1", "nome": "João", "funcao": "Teclado", "status": "Confirmado"}]
+    escalados = models.JSONField(default=list, blank=True)
+    dataCriacao = models.DateTimeField(auto_now_add=True)
+    dataAtualizacao = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'escalas_ministerio'

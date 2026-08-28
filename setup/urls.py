@@ -16,7 +16,11 @@ from usuarios.views import (
     IdeSalaViewSet,
     FilaNotificacaoPushViewSet,
     GcLancamentoSemanalViewSet,
-    ConfiguracaoSistemaViewSet
+    ConfiguracaoSistemaViewSet,
+    MinisterioViewSet, 
+    VoluntarioViewSet, 
+    EventoMinisterioViewSet, 
+    EscalaMinisterioViewSet
 )
 
 # Roteador automatico do Django para CRUD completo (GET, POST, PUT, DELETE)
@@ -33,6 +37,10 @@ router.register(r'ide_salas', IdeSalaViewSet, basename='ide_salas')
 router.register(r'fila_notificacoes_push', FilaNotificacaoPushViewSet, basename='fila_notificacoes_push')
 router.register(r'gc_lancamentos', GcLancamentoSemanalViewSet, basename='gc_lancamentos')
 router.register(r'configuracoes', ConfiguracaoSistemaViewSet, basename='configuracoes')
+router.register(r'ministerios', MinisterioViewSet, basename='ministerio')
+router.register(r'voluntarios', VoluntarioViewSet, basename='voluntario')
+router.register(r'eventos_ministerio', EventoMinisterioViewSet, basename='eventos_ministerio')
+router.register(r'escalas_ministerio', EscalaMinisterioViewSet, basename='escalas_ministerio')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

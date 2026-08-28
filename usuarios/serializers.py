@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from .models import CadastroGeral, FormularioAvulso
 from .models import GcLancamentoSemanal, ConfiguracaoSistema, GrupoConexao
 from .models import IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala, FilaNotificacaoPush
+from .models import Ministerio, Voluntario, EventoMinisterio, EscalaMinisterio
 
 class CadastroGeralSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,4 +65,24 @@ class IdeSalaSerializer(serializers.ModelSerializer):
 class FilaNotificacaoPushSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilaNotificacaoPush
+        fields = '__all__'
+
+class MinisterioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ministerio
+        fields = '__all__'
+
+class VoluntarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Voluntario
+        fields = '__all__'
+
+class EventoMinisterioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventoMinisterio
+        fields = '__all__'
+
+class EscalaMinisterioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EscalaMinisterio
         fields = '__all__'

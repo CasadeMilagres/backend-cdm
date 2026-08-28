@@ -8,11 +8,16 @@ from django.contrib.auth import get_user_model
 # Aqui importamos todos os modelos que criamos no models.py
 from .models import CadastroGeral, GrupoConexao, FormularioAvulso, GcLancamentoSemanal, IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala, FilaNotificacaoPush, ConfiguracaoSistema
 # E aqui os serializadores
+from .models import Ministerio, Voluntario, EventoMinisterio, EscalaMinisterio
 from .serializers import CadastroGeralSerializer, UsuarioSerializer, GrupoConexaoSerializer, FormularioAvulsoSerializer, GcLancamentoSemanalSerializer, ConfiguracaoSistemaSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import (
     IdeModuloSerializer, IdeFormularioSerializer, IdeTurmaSerializer,
     IdeInscricaoSerializer, IdeSalaSerializer, FilaNotificacaoPushSerializer
+)
+from .serializers import (
+    MinisterioSerializer, VoluntarioSerializer, 
+    EventoMinisterioSerializer, EscalaMinisterioSerializer
 )
 
 Usuario = get_user_model()
@@ -193,3 +198,23 @@ def dashboard_stats(request):
         ]
 
     return Response({'cards': cards})
+
+class MinisterioViewSet(viewsets.ModelViewSet):
+    queryset = Ministerio.objects.all().order_by('nome')
+    serializer_class = MinisterioSerializer
+    permission_classes = [IsAuthenticated]
+
+class VoluntarioViewSet(viewsets.ModelViewSet):
+    queryset = Voluntario.objects.all().order_by('nome')
+    serializer_class = VoluntarioSerializer
+    permission_classes = [IsAuthenticated]
+
+class EventoMinisterioViewSet(viewsets.ModelViewSet):
+    queryset = EventoMinisterio.objects.all().order_by('nome')
+    serializer_class = EventoMinisterioSerializer
+    permission_classes = [IsAuthenticated]
+
+class EscalaMinisterioViewSet(viewsets.ModelViewSet):
+    queryset = EscalaMinisterio.objects.all().order_by('-data')
+    serializer_class = EscalaMinisterioSerializer
+    permission_classes = [IsAuthenticated]
