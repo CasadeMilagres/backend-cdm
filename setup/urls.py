@@ -2,19 +2,21 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
-# Importação corrigida com todas as views
 from usuarios.views import (
-    perfil_usuario, 
+    perfil_usuario,
     dashboard_stats,
-    CadastroGeralViewSet, 
-    UsuarioViewSet, 
+    CadastroGeralViewSet,
+    UsuarioViewSet,
     GrupoConexaoViewSet,
-    GcLancamentoSemanalViewSet, 
-    ConfiguracaoSistemaViewSet,
     FormularioAvulsoViewSet,
-    IdeModuloViewSet, IdeFormularioViewSet, IdeTurmaViewSet,
-    IdeInscricaoViewSet, IdeSalaViewSet, FilaNotificacaoPushViewSet # Novo
+    IdeModuloViewSet,
+    IdeFormularioViewSet,
+    IdeTurmaViewSet,
+    IdeInscricaoViewSet,
+    IdeSalaViewSet,
+    FilaNotificacaoPushViewSet,
+    GcLancamentoSemanalViewSet,
+    ConfiguracaoSistemaViewSet
 )
 
 # Roteador automatico do Django para CRUD completo (GET, POST, PUT, DELETE)
@@ -32,13 +34,11 @@ router.register(r'fila_notificacoes_push', FilaNotificacaoPushViewSet, basename=
 router.register(r'gc_lancamentos', GcLancamentoSemanalViewSet, basename='gc_lancamentos')
 router.register(r'configuracoes', ConfiguracaoSistemaViewSet, basename='configuracoes')
 
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/perfil/', perfil_usuario, name='perfil_usuario'),
-    path('api/dashboard/', dashboard_stats, name='dashboard_stats'), # Nova rota registrada
+    path('api/dashboard/', dashboard_stats, name='dashboard_stats'),
     path('api/', include(router.urls)),
 ]
