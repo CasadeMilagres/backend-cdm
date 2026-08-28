@@ -1,15 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap');
 
 :root {
-  /* Cores exatas da Paleta CDM */
+  /* Cores da Paleta CDM */
   --cdm-azul: #1D14B3;
   --cdm-ciano: #00A3E0;
   --cdm-preto: #000000;
   --cdm-branco: #FFFFFF;
-  
-  /* Gradientes da Paleta */
-  --cdm-gradient-dark: linear-gradient(90deg, #18143c 0%, #1D14B3 100%);
-  --cdm-gradient-cyan-blue: linear-gradient(90deg, #00A3E0 0%, #1D14B3 100%);
+  --cdm-fundo-claro: #F8FAFC; /* Cinza super claro para o fundo da página */
 }
 
 /* Tipografia Global */
@@ -17,92 +14,108 @@ html, body, table, input, button, select, textarea {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
+/* Fundo Geral da Aplicação */
+body, main, #main {
+  background-color: var(--cdm-fundo-claro) !important;
+}
+
 /* =========================================
-   1. SIDEBAR (MENU LATERAL) PRETA COM CIANO
+   1. SIDEBAR (MENU LATERAL) - CLARA E CLEAN
    ========================================= */
 aside {
-  background-color: var(--cdm-preto) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background-color: var(--cdm-branco) !important;
+  border-right: 1px solid #E2E8F0 !important;
 }
 
 /* Títulos das sessões no Menu */
 aside span.text-gray-500 {
-  color: #64748B !important;
+  color: #94A3B8 !important;
   font-weight: 800 !important;
   letter-spacing: 0.05em !important;
+}
+
+/* Links do menu inativos */
+aside a {
+  color: #475569 !important;
+  font-weight: 600 !important;
 }
 
 /* Item do menu Ativo */
 aside .bg-primary-100, aside .dark\:bg-primary-900\/20 {
-  background: rgba(0, 163, 224, 0.15) !important; /* Fundo Ciano Transparente */
-  border-left: 3px solid var(--cdm-ciano) !important;
-  color: var(--cdm-branco) !important;
+  background: rgba(0, 163, 224, 0.08) !important; /* Fundo Ciano bem sutil */
+  border-left: 4px solid var(--cdm-ciano) !important;
+  color: var(--cdm-azul) !important;
 }
 
 /* Ícones e Textos do menu ativo */
 aside .text-primary-600, aside .dark\:text-primary-500 {
-  color: var(--cdm-ciano) !important;
-  font-weight: 700 !important;
+  color: var(--cdm-azul) !important;
+  font-weight: 800 !important;
 }
 
 /* Hover nos itens do menu */
 aside a:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
+  background: #F1F5F9 !important;
+  color: var(--cdm-azul) !important;
 }
 
 /* =========================================
-   2. BOTÕES MODERNOS E GRADIENTES
+   2. TABELAS (LISTAGENS DO DJANGO) - CLARAS
    ========================================= */
-/* Sobrescreve o botão primário padrão do Unfold */
-.bg-primary-600, .dark\:bg-primary-600 {
-  background: var(--cdm-gradient-cyan-blue) !important;
-  border: none !important;
-  color: var(--cdm-branco) !important;
-  font-weight: 800 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  transition: all 0.2s ease-in-out !important;
+table {
+  background-color: var(--cdm-branco) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
 }
 
-.bg-primary-600:hover, .dark\:bg-primary-600:hover {
-  transform: scale(0.98);
-  box-shadow: 0 4px 15px rgba(0, 163, 224, 0.4) !important;
-}
-
-/* =========================================
-   3. DASHBOARD E COMPONENTES GERAIS
-   ========================================= */
-.cdm-hero-mesh {
-  background: var(--cdm-gradient-cyan-blue) !important;
-  border-radius: 0 0 2rem 2rem;
-  box-shadow: 0 10px 30px -10px rgba(29, 20, 179, 0.4);
-}
-
-.cdm-card {
-  background-color: var(--cdm-branco);
-  border-radius: 1.5rem;
-  border: 1px solid #F1F5F9;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-}
-
-/* =========================================
-   4. TABELAS (LISTAGENS DO DJANGO)
-   ========================================= */
 thead th {
-  background-color: var(--cdm-preto) !important;
-  color: var(--cdm-branco) !important;
+  background-color: var(--cdm-branco) !important;
+  color: var(--cdm-azul) !important; /* Letras azuis nos títulos da tabela */
   font-size: 0.70rem !important;
   font-weight: 800 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
   padding: 16px !important;
+  border-bottom: 2px solid #E2E8F0 !important;
+}
+
+tbody tr {
+  background-color: var(--cdm-branco) !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+}
+
+tbody td {
+  color: #334155 !important;
 }
 
 tbody tr:hover {
-  background-color: rgba(0, 163, 224, 0.04) !important;
+  background-color: #F8FAFC !important;
 }
 
-/* Badges Customizadas (Tags) */
+/* =========================================
+   3. BOTÕES MODERNOS E DESTAQUES
+   ========================================= */
+/* Botões principais (Salvar, Adicionar, etc) */
+.bg-primary-600, .dark\:bg-primary-600 {
+  background-color: var(--cdm-azul) !important;
+  border: none !important;
+  color: var(--cdm-branco) !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.bg-primary-600:hover, .dark\:bg-primary-600:hover {
+  background-color: var(--cdm-ciano) !important;
+  transform: scale(0.98);
+}
+
+/* =========================================
+   4. BADGES (ETIQUETAS / STATUS)
+   ========================================= */
 .cdm-badge {
   display: inline-flex !important;
   align-items: center !important;
@@ -118,5 +131,3 @@ tbody tr:hover {
 .cdm-badge-cyan { background: rgba(0, 163, 224, 0.1) !important; color: var(--cdm-ciano) !important; }
 .cdm-badge-emerald { background: rgba(16, 185, 129, 0.1) !important; color: #059669 !important; }
 .cdm-badge-amber { background: rgba(245, 158, 11, 0.1) !important; color: #D97706 !important; }
-.cdm-badge-muted { background: #F1F5F9 !important; color: #64748B !important; }
-.cdm-badge-purple { background: rgba(168, 85, 247, 0.1) !important; color: #9333EA !important; }
