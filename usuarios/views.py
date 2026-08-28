@@ -522,9 +522,9 @@ class JornadaCadastroViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['etapa', 'exportado', 'jornadaConcluida']
 
-    # 🔥 Adicione este bloco para liberar o envio do formulário público
+    # 🔥 Libera o POST (create) e o GET por ID (retrieve) para as telas públicas
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action in ['create', 'retrieve']:
             return [AllowAny()]
         return [IsAuthenticated()]
 
