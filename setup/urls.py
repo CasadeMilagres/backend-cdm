@@ -20,7 +20,13 @@ from usuarios.views import (
     MinisterioViewSet, 
     VoluntarioViewSet, 
     EventoMinisterioViewSet, 
-    EscalaMinisterioViewSet
+    EscalaMinisterioViewSet,
+    ProdutoComercialViewSet,
+    ClienteComercialViewSet,
+    VendaComercialViewSet,
+    PendenciaComercialViewSet,
+    EntradaEstoqueComercialViewSet,
+    ContaPagarComercialViewSet
 )
 
 # Roteador automatico do Django para CRUD completo (GET, POST, PUT, DELETE)
@@ -41,6 +47,12 @@ router.register(r'ministerios', MinisterioViewSet, basename='ministerio')
 router.register(r'voluntarios', VoluntarioViewSet, basename='voluntario')
 router.register(r'eventos_ministerio', EventoMinisterioViewSet, basename='eventos_ministerio')
 router.register(r'escalas_ministerio', EscalaMinisterioViewSet, basename='escalas_ministerio')
+router.register(r'comercial/produtos', ProdutoComercialViewSet, basename='comercial-produtos')
+router.register(r'comercial/clientes', ClienteComercialViewSet, basename='comercial-clientes')
+router.register(r'comercial/vendas', VendaComercialViewSet, basename='comercial-vendas')
+router.register(r'comercial/pendencias', PendenciaComercialViewSet, basename='comercial-pendencias')
+router.register(r'comercial/entradas-estoque', EntradaEstoqueComercialViewSet, basename='comercial-entradas')
+router.register(r'comercial/contas-pagar', ContaPagarComercialViewSet, basename='comercial-contas-pagar')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

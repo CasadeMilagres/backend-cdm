@@ -4,13 +4,24 @@ from rest_framework.response import Response
 from datetime import datetime, timedelta
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
+from django.db import transaction
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 # Aqui importamos todos os modelos que criamos no models.py
 from .models import CadastroGeral, GrupoConexao, FormularioAvulso, GcLancamentoSemanal, IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala, FilaNotificacaoPush, ConfiguracaoSistema
 # E aqui os serializadores
 from .models import Ministerio, Voluntario, EventoMinisterio, EscalaMinisterio
+from .models import (
+    ProdutoComercial, ClienteComercial, VendaComercial,
+    PendenciaComercial, EntradaEstoqueComercial, ContaPagarComercial
+)
 from .serializers import CadastroGeralSerializer, UsuarioSerializer, GrupoConexaoSerializer, FormularioAvulsoSerializer, GcLancamentoSemanalSerializer, ConfiguracaoSistemaSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from .serializers import (
+    ProdutoComercialSerializer, ClienteComercialSerializer, VendaComercialSerializer,
+    PendenciaComercialSerializer, EntradaEstoqueComercialSerializer, ContaPagarComercialSerializer
+)
 from .serializers import (
     IdeModuloSerializer, IdeFormularioSerializer, IdeTurmaSerializer,
     IdeInscricaoSerializer, IdeSalaSerializer, FilaNotificacaoPushSerializer
@@ -218,3 +229,169 @@ class EscalaMinisterioViewSet(viewsets.ModelViewSet):
     queryset = EscalaMinisterio.objects.all().order_by('-data')
     serializer_class = EscalaMinisterioSerializer
     permission_classes = [IsAuthenticated]
+
+class ProdutoComercialViewSet(viewsets.ModelViewSet):
+    serializer_class = ProdutoComercialSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = ProdutoComercial.objects.all().order_by('codigo', 'nome')
+        modulo = self.request.query_params.get('modulo')
+        if modulo:
+            qs = qs.filter(modulo=modulo)
+        return qs
+
+class ClienteComercialViewSet(viewsets.ModelViewSet):
+    serializer_class = ClienteComercialSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = ClienteComercial.objects.all().order_by('nome')
+        modulo = self.request.query_params.get('modulo')
+        if modulo:
+            qs = qs.filter(modulo=modulo)
+        return qs
+
+class VendaComercialViewSet(viewsets.ModelViewSet):
+    serializer_class = VendaComercialSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = VendaComercial.objects.all().order_by('-dataVenda')
+        modulo = self.request.query_params.get('modulo')
+        if modulo:
+            qs = qs.filter(modulo=modulo)
+        return qs
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        # Baixa estoque de forma atômica se não for fiado
+        itens = request.data.get('itens', [])
+        modulo = request.data.get('modulo', 'cafeteria')
+
+        for item in itens:
+            prod_id = item.get('id')
+            qtd = int(item.get('quantidade', 1))
+            if prod_id:
+                try:
+                    prod = ProdutoComercial.objects.select_for_update().get(id=prod_id)
+                    prod.estoque = max(0, prod.estoque - qtd)
+                    prod.save()
+                except ProdutoComercial.DoesNotExist:
+                    pass
+
+        return super().create(request, *args, **kwargs)
+
+    @transaction.atomic
+    def destroy(self, request, *args, **kwargs):
+        # Ao excluir venda normal, devolve os itens ao estoque
+        venda = self.get_object()
+        for item in (venda.itens or []):
+            prod_id = item.get('id')
+            qtd = int(item.get('quantidade', 0))
+            if prod_id and qtd > 0:
+                try:
+                    prod = ProdutoComercial.objects.select_for_update().get(id=prod_id)
+                    prod.estoque += qtd
+                    prod.save()
+                except ProdutoComercial.DoesNotExist:
+                    pass
+        return super().destroy(request, *args, **kwargs)
+
+class PendenciaComercialViewSet(viewsets.ModelViewSet):
+    serializer_class = PendenciaComercialSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = PendenciaComercial.objects.all().order_by('-dataVenda')
+        modulo = self.request.query_params.get('modulo')
+        if modulo:
+            qs = qs.filter(modulo=modulo)
+        return qs
+
+    @action(detail=False, methods=['post'], url_path='quitar-lote')
+    @transaction.atomic
+    def quitar_lote(self, request):
+        pendencias_ids = request.data.get('pendenciasIds', [])
+        pagamentos = request.data.get('pagamentos', [])
+        data_pagamento = request.data.get('dataPagamento')
+        modulo = request.data.get('modulo', 'cafeteria')
+        cliente_id = request.data.get('clienteId', 'Cliente')
+
+        if not pendencias_ids:
+            return Response({'error': 'Nenhuma pendência selecionada.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        pendencias = PendenciaComercial.objects.filter(id__in=pendencias_ids)
+        total_pago = sum(float(p.get('valor', 0)) for p in pagamentos)
+
+        # Baixa estoque dos itens se ainda não baixados
+        for pend in pendencias:
+            if not pend.estoqueBaixado:
+                for item in (pend.itens or []):
+                    prod_id = item.get('id')
+                    qtd = int(item.get('quantidade', 1))
+                    if prod_id:
+                        try:
+                            prod = ProdutoComercial.objects.select_for_update().get(id=prod_id)
+                            prod.estoque = max(0, prod.estoque - qtd)
+                            prod.save()
+                        except ProdutoComercial.DoesNotExist:
+                            pass
+
+        formas_str = " + ".join([p.get('forma', '') for p in pagamentos if p.get('forma')])
+        todos_itens = []
+        for p in pendencias:
+            todos_itens.extend(p.itens or [])
+
+        # Cria a venda correspondente à quitação
+        VendaComercial.objects.create(
+            modulo=modulo,
+            clienteId=cliente_id,
+            itens=todos_itens,
+            valorTotal=total_pago,
+            formaPagamento=formas_str,
+            pagamentosMult=pagamentos,
+            vendedor="Sistema (Baixa Pendência)",
+            dataVenda=data_pagamento,
+            dataPendenciaOriginal=pendencias.first().dataVenda if pendencias.exists() else data_pagamento
+        )
+
+        pendencias.delete()
+        return Response({'success': True, 'message': 'Pendências quitadas com sucesso!'})
+
+class EntradaEstoqueComercialViewSet(viewsets.ModelViewSet):
+    serializer_class = EntradaEstoqueComercialSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = EntradaEstoqueComercial.objects.all().order_by('-dataEntrada')
+        modulo = self.request.query_params.get('modulo')
+        if modulo:
+            qs = qs.filter(modulo=modulo)
+        return qs
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        prod_id = request.data.get('produtoId')
+        qtd = int(request.data.get('quantidadeAdicionada', 0))
+
+        if prod_id and qtd > 0:
+            try:
+                prod = ProdutoComercial.objects.select_for_update().get(id=prod_id)
+                prod.estoque += qtd
+                prod.save()
+            except ProdutoComercial.DoesNotExist:
+                return Response({'error': 'Produto não localizado.'}, status=status.HTTP_404_NOT_FOUND)
+
+        return super().create(request, *args, **kwargs)
+
+class ContaPagarComercialViewSet(viewsets.ModelViewSet):
+    serializer_class = ContaPagarComercialSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = ContaPagarComercial.objects.all().order_by('-vencimento')
+        modulo = self.request.query_params.get('modulo')
+        if modulo:
+            qs = qs.filter(modulo=modulo)
+        return qs

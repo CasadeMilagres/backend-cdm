@@ -288,3 +288,97 @@ class EscalaMinisterio(models.Model):
 
     class Meta:
         db_table = 'escalas_ministerio'
+
+class ProdutoComercial(models.Model):
+    modulo = models.CharField(max_length=50, default='cafeteria') # 'cafeteria' ou 'livraria'
+    codigo = models.IntegerField(default=0)
+    nome = models.CharField(max_length=255)
+    codigoBarras = models.CharField(max_length=100, blank=True, null=True)
+    precoCusto = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    precoVenda = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    estoque = models.IntegerField(default=0)
+    imagemUrl = models.TextField(blank=True, null=True)
+    categoria = models.CharField(max_length=100, blank=True, null=True)
+    dataCadastro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'comercial_produtos'
+
+    def __str__(self):
+        return f"[{self.modulo.upper()}] {self.nome}"
+
+class ClienteComercial(models.Model):
+    modulo = models.CharField(max_length=50, default='cafeteria')
+    nome = models.CharField(max_length=255)
+    telefone = models.CharField(max_length=50, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    dataCadastro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'comercial_clientes'
+
+    def __str__(self):
+        return self.nome
+
+class VendaComercial(models.Model):
+    modulo = models.CharField(max_length=50, default='cafeteria')
+    clienteId = models.CharField(max_length=255, default='Venda Avulsa')
+    itens = models.JSONField(default=list, blank=True)
+    valorTotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    formaPagamento = models.CharField(max_length=255, default='Dinheiro')
+    pagamentosMult = models.JSONField(default=list, blank=True)
+    vendedor = models.CharField(max_length=150, default='Sistema PDV')
+    dataVenda = models.DateTimeField()
+    dataPendenciaOriginal = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'comercial_vendas'
+
+    def __str__(self):
+        return f"Venda {self.id} - {self.modulo} - R$ {self.valorTotal}"
+
+class PendenciaComercial(models.Model):
+    modulo = models.CharField(max_length=50, default='cafeteria')
+    clienteId = models.CharField(max_length=255)
+    itens = models.JSONField(default=list, blank=True)
+    valorTotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    formaPagamento = models.CharField(max_length=100, default='Fiado/Pendente')
+    pagamentosMult = models.JSONField(default=list, blank=True)
+    dataVenda = models.DateTimeField()
+    vendedor = models.CharField(max_length=150, default='Sistema PDV')
+    estoqueBaixado = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'comercial_pendencias'
+
+    def __str__(self):
+        return f"Pendência {self.clienteId} - R$ {self.valorTotal}"
+
+class EntradaEstoqueComercial(models.Model):
+    modulo = models.CharField(max_length=50, default='cafeteria')
+    produtoId = models.CharField(max_length=100)
+    produtoNome = models.CharField(max_length=255)
+    quantidadeAdicionada = models.IntegerField(default=1)
+    usuario = models.CharField(max_length=150, default='Sistema')
+    dataEntrada = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'comercial_entradas_estoque'
+
+    def __str__(self):
+        return f"+{self.quantidadeAdicionada} {self.produtoNome}"
+
+class ContaPagarComercial(models.Model):
+    modulo = models.CharField(max_length=50, default='cafeteria')
+    descricao = models.CharField(max_length=255)
+    fornecedor = models.CharField(max_length=255, blank=True, null=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    vencimento = models.DateField(blank=True, null=True)
+    status = models.CharField(max_length=50, default='Pendente') # 'Pendente' ou 'Pago'
+    dataCadastro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'comercial_contas_pagar'
+
+    def __str__(self):
+        return f"{self.descricao} - R$ {self.valor}"
