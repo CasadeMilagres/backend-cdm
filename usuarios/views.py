@@ -1,6 +1,6 @@
 import requests
 from django.conf import settings
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from datetime import datetime, timedelta
@@ -42,7 +42,8 @@ from .serializers import (
 Usuario = get_user_model()
 
 @api_view(['POST'])
-@permission_classes([AllowAny]) # AllowAny pois os formulários públicos também enviam WhatsApp
+@authentication_classes([]) # 🔥 IGNORA QUALQUER TOKEN VELHO NO NAVEGADOR
+@permission_classes([AllowAny])
 def enviar_whatsapp_view(request):
     numero = request.data.get('number')
     texto = request.data.get('text')
@@ -212,8 +213,13 @@ class GcLancamentoSemanalViewSet(viewsets.ModelViewSet):
 class ConfiguracaoSistemaViewSet(viewsets.ModelViewSet):
     queryset = ConfiguracaoSistema.objects.all()
     serializer_class = ConfiguracaoSistemaSerializer
-    permission_classes = [AllowAny]
     lookup_field = 'chave'
+
+    # 🔥 Libera apenas a LEITURA (GET) para as páginas públicas
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 class IdeModuloViewSet(viewsets.ModelViewSet):
     queryset = IdeModulo.objects.all().order_by('nome')
