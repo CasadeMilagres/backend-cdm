@@ -44,7 +44,7 @@ UNFOLD = {
     "SHOW_VIEW_ON_SITE": False,
     "DASHBOARD_CALLBACK": "usuarios.views.dashboard_callback",
     "STYLES": [
-        lambda request: "css/custom_cdm.css", # 🔥 CSS para forçar a paleta da igreja
+        lambda request: "css/custom_cdm.css?v=2", # 🔥 Truque para quebrar o cache
     ],
     "COLORS": {
         "primary": {
