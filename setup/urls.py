@@ -26,7 +26,9 @@ from usuarios.views import (
     VendaComercialViewSet,
     PendenciaComercialViewSet,
     EntradaEstoqueComercialViewSet,
-    ContaPagarComercialViewSet
+    ContaPagarComercialViewSet,
+    JornadaCadastroViewSet, 
+    ConfiguracaoSistemaViewSet
 )
 
 # Roteador automatico do Django para CRUD completo (GET, POST, PUT, DELETE)
@@ -53,6 +55,7 @@ router.register(r'comercial/vendas', VendaComercialViewSet, basename='comercial-
 router.register(r'comercial/pendencias', PendenciaComercialViewSet, basename='comercial-pendencias')
 router.register(r'comercial/entradas-estoque', EntradaEstoqueComercialViewSet, basename='comercial-entradas')
 router.register(r'comercial/contas-pagar', ContaPagarComercialViewSet, basename='comercial-contas-pagar')
+router.register(r'jornada', JornadaCadastroViewSet, basename='jornada')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

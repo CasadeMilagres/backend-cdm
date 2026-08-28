@@ -4,6 +4,7 @@ from .models import CadastroGeral, FormularioAvulso
 from .models import GcLancamentoSemanal, ConfiguracaoSistema, GrupoConexao
 from .models import IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala, FilaNotificacaoPush
 from .models import Ministerio, Voluntario, EventoMinisterio, EscalaMinisterio
+from .models import JornadaCadastro, ConfiguracaoSistema
 from .models import (
     ProdutoComercial, ClienteComercial, VendaComercial,
     PendenciaComercial, EntradaEstoqueComercial, ContaPagarComercial
@@ -121,4 +122,14 @@ class EntradaEstoqueComercialSerializer(serializers.ModelSerializer):
 class ContaPagarComercialSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContaPagarComercial
+        fields = '__all__'
+
+class JornadaCadastroSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JornadaCadastro
+        fields = '__all__'
+
+class ConfiguracaoSistemaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConfiguracaoSistema
         fields = '__all__'

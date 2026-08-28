@@ -1,5 +1,9 @@
+import uuid
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+
+def gerar_id_jornada():
+    return uuid.uuid4().hex[:20]
 
 class UsuarioManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -382,3 +386,24 @@ class ContaPagarComercial(models.Model):
 
     def __str__(self):
         return f"{self.descricao} - R$ {self.valor}"
+
+class JornadaCadastro(models.Model):
+    id = models.CharField(max_length=100, primary_key=True, default=gerar_id_jornada, editable=False)
+    cadastroId = models.CharField(max_length=100, blank=True, null=True)
+    nome = models.CharField(max_length=255)
+    celular = models.CharField(max_length=50)
+    etapa = models.IntegerField(default=0)
+    exportado = models.BooleanField(default=False)
+    cobrancaAtivada = models.BooleanField(default=False)
+    cobrancaEnviosCount = models.IntegerField(default=0)
+    historicoMensagens = models.JSONField(default=list, blank=True)
+    cursosConcluidos = models.JSONField(default=list, blank=True)
+    jornadaConcluida = models.BooleanField(default=False)
+    dataConclusao = models.DateTimeField(blank=True, null=True)
+    dataCadastro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'jornada_cadastros'
+
+    def __str__(self):
+        return f"{self.nome} - Etapa {self.etapa}"

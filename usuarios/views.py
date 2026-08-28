@@ -9,8 +9,11 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 # Aqui importamos todos os modelos que criamos no models.py
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import JornadaCadastro, ConfiguracaoSistema
 from .models import CadastroGeral, GrupoConexao, FormularioAvulso, GcLancamentoSemanal, IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala, FilaNotificacaoPush, ConfiguracaoSistema
 # E aqui os serializadores
+from .serializers import JornadaCadastroSerializer, ConfiguracaoSistemaSerializer
 from .models import Ministerio, Voluntario, EventoMinisterio, EscalaMinisterio
 from .models import (
     ProdutoComercial, ClienteComercial, VendaComercial,
@@ -395,3 +398,14 @@ class ContaPagarComercialViewSet(viewsets.ModelViewSet):
         if modulo:
             qs = qs.filter(modulo=modulo)
         return qs
+
+class JornadaCadastroViewSet(viewsets.ModelViewSet):
+    queryset = JornadaCadastro.objects.all().order_by('-dataCadastro')
+    serializer_class = JornadaCadastroSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['etapa', 'exportado', 'jornadaConcluida']
+
+class ConfiguracaoSistemaViewSet(viewsets.ModelViewSet):
+    queryset = ConfiguracaoSistema.objects.all()
+    serializer_class = ConfiguracaoSistemaSerializer
+    lookup_field = 'chave'  # Permite buscar por api/configuracoes/jornada/
