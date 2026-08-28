@@ -1,8 +1,8 @@
-import requests
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+import requests
 from datetime import datetime, timedelta
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
@@ -41,8 +41,8 @@ from .serializers import (
 Usuario = get_user_model()
 
 @api_view(['POST'])
-@authentication_classes([])
-@permission_classes([AllowAny])
+@authentication_classes([])  # Desativa validacao de token JWT no DRF
+@permission_classes([AllowAny])  # Libera acesso publico sem login
 def enviar_whatsapp_view(request):
     numero = request.data.get('number')
     texto = request.data.get('text')
@@ -60,17 +60,10 @@ def enviar_whatsapp_view(request):
 
     try:
         response = requests.post(url, json=payload, headers=headers)
-        
-        # Valida se a Evolution API aceitou o envio (200 ou 201)
         if response.status_code in [200, 201]:
-            return Response({"success": True, "data": response.json()})
-        else:
-            # Imprime o motivo real da rejeição no log do servidor
-            print(f"❌ Erro Evolution API ({response.status_code}): {response.text}")
-            return Response({"error": "Falha no envio do WhatsApp", "details": response.text}, status=response.status_code)
-            
+            return Response({"success": True})
+        return Response({"error": "Evolution API recusou o envio", "details": response.text}, status=response.status_code)
     except Exception as e:
-        print(f"❌ Exceção ao conectar na Evolution API: {str(e)}")
         return Response({"error": str(e)}, status=500)
 
 @api_view(['GET'])
