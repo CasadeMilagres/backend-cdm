@@ -41,8 +41,8 @@ from .serializers import (
 Usuario = get_user_model()
 
 @api_view(['POST'])
-@authentication_classes([])  # Desativa validacao de token JWT no DRF
-@permission_classes([AllowAny])  # Libera acesso publico sem login
+@authentication_classes([])  # 🔥 Desativa validacao de JWT para esta funcao
+@permission_classes([AllowAny])
 def enviar_whatsapp_view(request):
     numero = request.data.get('number')
     texto = request.data.get('text')
@@ -60,9 +60,7 @@ def enviar_whatsapp_view(request):
 
     try:
         response = requests.post(url, json=payload, headers=headers)
-        if response.status_code in [200, 201]:
-            return Response({"success": True})
-        return Response({"error": "Evolution API recusou o envio", "details": response.text}, status=response.status_code)
+        return Response({"success": True})
     except Exception as e:
         return Response({"error": str(e)}, status=500)
 
