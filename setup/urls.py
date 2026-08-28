@@ -28,7 +28,8 @@ from usuarios.views import (
     EntradaEstoqueComercialViewSet,
     ContaPagarComercialViewSet,
     JornadaCadastroViewSet, 
-    ConfiguracaoSistemaViewSet
+    ConfiguracaoSistemaViewSet,
+    enviar_whatsapp_view  # <--- ADICIONE ESTA LINHA AQUI
 )
 
 # Roteador automatico do Django para CRUD completo (GET, POST, PUT, DELETE)
@@ -63,5 +64,6 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/perfil/', perfil_usuario, name='perfil_usuario'),
     path('api/dashboard/', dashboard_stats, name='dashboard_stats'),
+    path('api/whatsapp/send/', enviar_whatsapp_view, name='whatsapp_send'),
     path('api/', include(router.urls)),
 ]

@@ -1,3 +1,5 @@
+import requests
+from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,6 +12,9 @@ from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 # Aqui importamos todos os modelos que criamos no models.py
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db import models
+from django.db.models import Sum, Count, Q
+from django.core.cache import cache
 from .models import JornadaCadastro, ConfiguracaoSistema
 from .models import CadastroGeral, GrupoConexao, FormularioAvulso, GcLancamentoSemanal, IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala, FilaNotificacaoPush, ConfiguracaoSistema
 # E aqui os serializadores
@@ -36,6 +41,34 @@ from .serializers import (
 
 Usuario = get_user_model()
 
+@api_view(['POST'])
+@permission_classes([AllowAny]) # AllowAny pois os formulários públicos também enviam WhatsApp
+def enviar_whatsapp_view(request):
+    numero = request.data.get('number')
+    texto = request.data.get('text')
+    instance_name = request.data.get('instance', 'CDM_OFICIAL')
+
+    if not numero or not texto:
+        return Response({"error": "Número e texto são obrigatórios"}, status=400)
+
+    url = f"{settings.EVOLUTION_API_URL}/message/sendText/{instance_name}"
+    headers = {
+        "Content-Type": "application/json",
+        "apikey": settings.EVOLUTION_API_KEY
+    }
+    payload = {
+        "number": numero,
+        "text": texto
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code in [200, 201]:
+            return Response({"success": True})
+        return Response({"error": "Falha na Evolution API"}, status=response.status_code)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def perfil_usuario(request):
@@ -58,6 +91,84 @@ def perfil_usuario(request):
     }
     return Response(dados)
 
+def dashboard_callback(request, context):
+    cache_key = "cdm_dashboard_kpis"
+    kpi_data = cache.get(cache_key)
+
+    if not kpi_data:
+        hoje = datetime.now().date()
+        inicio_semana = hoje - timedelta(days=hoje.weekday())
+        fim_semana = inicio_semana + timedelta(days=6)
+
+        # Consultas agregadas e diretas
+        total_membros = CadastroGeral.objects.count()
+        total_lideres = CadastroGeral.objects.filter(isLider='Sim').count()
+
+        jornada_stats = JornadaCadastro.objects.aggregate(
+            total=Count('id'),
+            p1=Count('id', filter=models.Q(etapa=1)),
+            p2=Count('id', filter=models.Q(etapa=2)),
+            p3=Count('id', filter=models.Q(etapa=3)),
+            p4=Count('id', filter=models.Q(etapa=4)),
+            formados=Count('id', filter=models.Q(jornadaConcluida=True)),
+        )
+
+        total_gcs = GrupoConexao.objects.count()
+        gc_stats = GcLancamentoSemanal.objects.filter(
+            dataGc__range=[inicio_semana, fim_semana]
+        ).aggregate(
+            ocorridos=Count('id', filter=models.Q(statusGc='Ocorreu')),
+            nao_ocorridos=Count('id', filter=models.Q(statusGc='Nao_Ocorreu')),
+            total_oferta=Sum('oferta'),
+            total_membros=Sum('membros'),
+            total_visitantes=Sum('visitantes'),
+            total_curas=Sum('qtdCurados'),
+        )
+
+        vendas_mes = VendaComercial.objects.filter(
+            dataVenda__month=hoje.month, dataVenda__year=hoje.year
+        ).aggregate(total=Sum('valorTotal'))['total'] or 0.00
+
+        pendencias_stats = PendenciaComercial.objects.aggregate(
+            total=Sum('valorTotal'),
+            qtd=Count('id')
+        )
+
+        contas_pagar = ContaPagarComercial.objects.filter(status='Pendente').aggregate(
+            total=Sum('valor')
+        )['total'] or 0.00
+
+        turmas_ativas = IdeTurma.objects.filter(status='Ativa', isEspera=False).count()
+        total_alunos_ide = IdeInscricao.objects.count()
+
+        kpi_data = {
+            'total_membros': total_membros,
+            'total_lideres': total_lideres,
+            'total_jornada': jornada_stats['total'] or 0,
+            'jornada_passo_1': jornada_stats['p1'] or 0,
+            'jornada_passo_2': jornada_stats['p2'] or 0,
+            'jornada_passo_3': jornada_stats['p3'] or 0,
+            'jornada_passo_4': jornada_stats['p4'] or 0,
+            'jornada_formados': jornada_stats['formados'] or 0,
+            'total_gcs': total_gcs,
+            'gcs_ocorridos': gc_stats['ocorridos'] or 0,
+            'gcs_nao_ocorridos': gc_stats['nao_ocorridos'] or 0,
+            'total_oferta_gc': gc_stats['total_oferta'] or 0.00,
+            'total_membros_gc': gc_stats['total_membros'] or 0,
+            'total_visitantes_gc': gc_stats['total_visitantes'] or 0,
+            'total_curas_gc': gc_stats['total_curas'] or 0,
+            'faturamento_mes': vendas_mes,
+            'total_pendencias_abertas': pendencias_stats['total'] or 0.00,
+            'qtd_pendencias_abertas': pendencias_stats['qtd'] or 0,
+            'contas_a_pagar_pendentes': contas_pagar,
+            'turmas_ativas': turmas_ativas,
+            'total_alunos_ide': total_alunos_ide,
+        }
+        # Salva o resultado em cache por 180 segundos
+        cache.set(cache_key, kpi_data, timeout=180)
+
+    context.update({'kpi': kpi_data})
+    return context
 
 class CadastroGeralViewSet(viewsets.ModelViewSet):
     queryset = CadastroGeral.objects.all().order_by('nome')
@@ -404,6 +515,12 @@ class JornadaCadastroViewSet(viewsets.ModelViewSet):
     serializer_class = JornadaCadastroSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['etapa', 'exportado', 'jornadaConcluida']
+
+    # 🔥 Adicione este bloco para liberar o envio do formulário público
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 class ConfiguracaoSistemaViewSet(viewsets.ModelViewSet):
     queryset = ConfiguracaoSistema.objects.all()

@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap');
+
+:root {
+  --cdm-blue: #1D14B3;
+  --cdm-cyan: #00A3E0;
+  --cdm-dark: #07090E;
+  --cdm-card: #0F131F;
+}
+
+/* Tipografia Global */
+html, body, table, input, button, select, textarea {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Sidebar e Navegação */
+aside {
+  background: linear-gradient(180deg, #090B12 0%, #05070B 100%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Tabelas e Listagens */
+table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+}
+
+thead th {
+  background-color: rgba(15, 19, 31, 0.7) !important;
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: #94A3B8 !important;
+  padding: 14px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+tbody tr {
+  transition: all 0.2s ease-in-out !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+
+tbody tr:hover {
+  background-color: rgba(0, 163, 224, 0.04) !important;
+}
+
+tbody td {
+  padding: 14px 16px !important;
+  font-size: 0.82rem !important;
+  vertical-align: middle !important;
+}
+
+/* Badges e Tags Modernas (Sem fundo branco quebrado) */
+.cdm-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 9px !important;
+  border-radius: 8px !important;
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+}
+
+.cdm-badge-blue {
+  background: rgba(29, 20, 179, 0.18) !important;
+  color: #818CF8 !important;
+  border: 1px solid rgba(29, 20, 179, 0.35) !important;
+}
+
+.cdm-badge-cyan {
+  background: rgba(0, 163, 224, 0.15) !important;
+  color: #38BDF8 !important;
+  border: 1px solid rgba(0, 163, 224, 0.35) !important;
+}
+
+.cdm-badge-emerald {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #34D399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.cdm-badge-amber {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #FBBF24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+.cdm-badge-purple {
+  background: rgba(168, 85, 247, 0.15) !important;
+  color: #C084FC !important;
+  border: 1px solid rgba(168, 85, 247, 0.3) !important;
+}
+
+.cdm-badge-muted {
+  background: rgba(148, 163, 184, 0.1) !important;
+  color: #94A3B8 !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+}
+
+/* Container de Múltiplos Badges */
+.cdm-badge-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 5px !important;
+  align-items: center !important;
+}
+
+/* Indicadores Booleanos Sutis (Substitui paredes de X vermelho) */
+.cdm-status-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #34D399;
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+
+.cdm-status-inactive {
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
