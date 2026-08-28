@@ -41,8 +41,8 @@ from .serializers import (
 Usuario = get_user_model()
 
 @api_view(['POST'])
-@authentication_classes([]) # 🔥 FORÇA O DJANGO A IGNORAR QUALQUER TOKEN
-@permission_classes([AllowAny]) # 🔥 GARANTE QUE É PÚBLICO
+@authentication_classes([])
+@permission_classes([AllowAny])
 def enviar_whatsapp_view(request):
     numero = request.data.get('number')
     texto = request.data.get('text')
@@ -511,7 +511,7 @@ class ContaPagarComercialViewSet(viewsets.ModelViewSet):
         return qs
 
 # =======================================================
-# 2. CLASSES FINAIS CORRIGIDAS
+# CLASSES DE JORNADA E CONFIGURAÇÃO
 # =======================================================
 class JornadaCadastroViewSet(viewsets.ModelViewSet):
     queryset = JornadaCadastro.objects.all().order_by('-dataCadastro')
@@ -519,31 +519,18 @@ class JornadaCadastroViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['etapa', 'exportado', 'jornadaConcluida']
 
-    # 🔥 Permite criar (POST) e ler (GET) sem estar logado
     def get_permissions(self):
-        if self.action in ['create', 'retrieve']:
+        # Validação segura da ação sem gerar AttributeError
+        if getattr(self, 'action', None) in ['create', 'retrieve']:
             return [AllowAny()]
         return [IsAuthenticated()]
-    
-    # 🔥 Ignora o verificador de Token nestas rotas públicas (Previro o Erro 401)
-    def get_authenticators(self):
-        if self.action in ['create', 'retrieve']:
-            return []
-        return super().get_authenticators()
 
 class ConfiguracaoSistemaViewSet(viewsets.ModelViewSet):
     queryset = ConfiguracaoSistema.objects.all()
     serializer_class = ConfiguracaoSistemaSerializer
     lookup_field = 'chave'
 
-    # 🔥 Permite ler (GET) sem estar logado
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
         return [IsAuthenticated()]
-
-    # 🔥 Ignora o verificador de Token no GET (Previne o Erro 401)
-    def get_authenticators(self):
-        if self.request.method == 'GET':
-            return []
-        return super().get_authenticators()
