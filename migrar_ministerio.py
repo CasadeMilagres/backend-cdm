@@ -2,11 +2,11 @@ import os
 import django
 import firebase_admin
 from firebase_admin import credentials, firestore
+from datetime import datetime
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'setup.settings')
 django.setup()
 
-# Altere "ministerios" se você tiver nomeado o app de outra forma
 from usuarios.models import Ministerio, Voluntario, EventoMinisterio, EscalaMinisterio
 
 cred = credentials.Certificate('firebase-key.json')
@@ -14,76 +14,80 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+def formatar_data(val):
+    if not val:
+        return None
+    if hasattr(val, 'strftime'):
+        return val.strftime('%Y-%m-%d')
+    val_str = str(val).strip()
+    if '/' in val_str:
+        partes = val_str.split('/')
+        if len(partes) == 3:
+            return f"{partes[2]}-{partes[1].zfill(2)}-{partes[0].zfill(2)}"
+    return val_str[:10]
+
 def migrar_ministerio():
-    print("🚀 Iniciando migração do módulo Ministério...")
+    print("🚀 Limpando tabelas antigas e reiniciando migração...")
+    EscalaMinisterio.objects.all().delete()
+    Voluntario.objects.all().delete()
+    EventoMinisterio.objects.all().delete()
+    Ministerio.objects.all().delete()
 
     min_map = {}
     evento_map = {}
     vol_map = {}
 
-    # 1. MIGRAR MINISTÉRIOS
-    print("Migrando Ministérios...")
-    docs_min = db.collection('ministerios').stream()
-    for doc in docs_min:
+    # 1. MINISTÉRIOS
+    print("Importando Ministérios...")
+    for doc in db.collection('ministerios').stream():
         d = doc.to_dict()
         novo_min = Ministerio.objects.create(
             nome=d.get('nome', 'Sem Nome'),
             lideres=d.get('lideres', []),
             funcoes=d.get('funcoes', [])
         )
-        # Salva o mapeamento: ID velho -> ID novo
         min_map[doc.id] = str(novo_min.id)
 
-    # 2. MIGRAR EVENTOS
-    print("Migrando Eventos...")
-    docs_ev = db.collection('eventos_ministerio').stream()
-    for doc in docs_ev:
+    # 2. EVENTOS
+    print("Importando Eventos...")
+    for doc in db.collection('eventos_ministerio').stream():
         d = doc.to_dict()
-        novo_ev = EventoMinisterio.objects.create(
-            nome=d.get('nome', 'Sem Nome')
-        )
+        novo_ev = EventoMinisterio.objects.create(nome=d.get('nome', 'Sem Nome'))
         evento_map[doc.id] = str(novo_ev.id)
 
-    # 3. MIGRAR VOLUNTÁRIOS
-    print("Migrando Voluntários...")
-    docs_vol = db.collection('voluntarios').stream()
-    for doc in docs_vol:
+    # 3. VOLUNTÁRIOS
+    print("Importando Voluntários...")
+    for doc in db.collection('voluntarios').stream():
         d = doc.to_dict()
-        
-        # Atualiza a lista de IDs de ministérios com os novos IDs do Postgres
         min_antigos = d.get('ministerios', [])
         min_novos = [min_map[m] for m in min_antigos if m in min_map]
 
         novo_vol = Voluntario.objects.create(
             cadastroId=d.get('cadastroId', ''),
             nome=d.get('nome', 'Sem Nome'),
-            telefone=d.get('telefone', ''),
-            email=d.get('email', ''),
+            telefone=d.get('telefone', '')[:20] if d.get('telefone') else '',
+            email=d.get('email', '') if (d.get('email') and '@' in d.get('email')) else None,
             sexo=d.get('sexo', ''),
             liderGc=d.get('liderGc', ''),
             ministerios=min_novos
         )
         vol_map[doc.id] = str(novo_vol.id)
 
-    # 4. MIGRAR ESCALAS
-    print("Migrando Escalas...")
-    docs_esc = db.collection('escalas_ministerio').stream()
-    for doc in docs_esc:
+    # 4. ESCALAS
+    print("Importando Escalas...")
+    escalas_count = 0
+    for doc in db.collection('escalas_ministerio').stream():
         d = doc.to_dict()
-        
-        min_id_antigo = d.get('ministerioId', '')
-        min_id_novo = min_map.get(min_id_antigo, min_id_antigo)
+        data_formatada = formatar_data(d.get('data'))
+        if not data_formatada:
+            continue
 
-        ev_id_antigo = d.get('eventoId', '')
-        ev_id_novo = evento_map.get(ev_id_antigo, ev_id_antigo)
+        min_id_novo = min_map.get(d.get('ministerioId', ''), str(d.get('ministerioId', '')))
+        ev_id_novo = evento_map.get(d.get('eventoId', ''), str(d.get('eventoId', '')))
 
-        # Atualiza os IDs dos voluntários dentro da lista de escalados
-        escalados_antigos = d.get('escalados', [])
         escalados_novos = []
-        for esc in escalados_antigos:
-            vol_id_antigo = esc.get('voluntarioId', '')
-            vol_id_novo = vol_map.get(vol_id_antigo, vol_id_antigo)
-            
+        for esc in d.get('escalados', []):
+            vol_id_novo = vol_map.get(esc.get('voluntarioId', ''), str(esc.get('voluntarioId', '')))
             escalados_novos.append({
                 "voluntarioId": vol_id_novo,
                 "nome": esc.get('nome', ''),
@@ -92,24 +96,21 @@ def migrar_ministerio():
                 "status": esc.get('status', 'Pendente')
             })
 
-        data_escala = d.get('data')
-        if not data_escala:
-            continue
-
         EscalaMinisterio.objects.create(
             ministerioId=min_id_novo,
             ministerioNome=d.get('ministerioNome', ''),
-            data=data_escala,
+            data=data_formatada,
             eventoId=ev_id_novo,
             evento=d.get('evento', ''),
             escalados=escalados_novos
         )
+        escalas_count += 1
 
-    print(f"\n✅ Migração Concluída com Sucesso!")
+    print(f"\n✅ Migração Finalizada com Sucesso!")
     print(f"   - {len(min_map)} Ministérios")
     print(f"   - {len(evento_map)} Eventos")
     print(f"   - {len(vol_map)} Voluntários")
-    print("   - Escalas importadas corretamente!")
+    print(f"   - {escalas_count} Escalas importadas!")
 
 if __name__ == '__main__':
     migrar_ministerio()
