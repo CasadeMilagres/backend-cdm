@@ -299,3 +299,8 @@ REST_FRAMEWORK = {
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 WHITENOISE_MANIFEST_STRICT = False
+
+# Permite que o Django entenda o HTTPS do Cloud Run
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+ALLOWED_HOSTS = ['*']
