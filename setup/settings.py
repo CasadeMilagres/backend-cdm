@@ -44,7 +44,7 @@ UNFOLD = {
     "SHOW_VIEW_ON_SITE": False,
     "DASHBOARD_CALLBACK": "usuarios.views.dashboard_callback",
     "STYLES": [
-        lambda request: "css/custom_cdm.css?v=2", # 🔥 Truque para quebrar o cache
+        lambda request: "css/custom_cdm.css?v=4", 
     ],
     "COLORS": {
         "primary": {
