@@ -304,3 +304,8 @@ WHITENOISE_MANIFEST_STRICT = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://backend-cdm-api-934434685854.us-central1.run.app',
+    'https://*.run.app',
+]
