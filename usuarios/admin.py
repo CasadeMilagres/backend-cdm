@@ -38,30 +38,25 @@ class UsuarioAdmin(BaseUserAdmin, ModelAdmin):
     @display(description="Nome Completo")
     def nome_formatado(self, obj):
         nome_tratado = (obj.nome or "Sem Nome").title()
-        return format_html("<span style='font-weight: 800; color: #FFFFFF;'>{}</span>", nome_tratado)
+        return format_html("<span class='font-bold text-gray-900 dark:text-white'>{}</span>", nome_tratado)
 
     @display(description="E-mail de Login")
     def email_formatado(self, obj):
-        return format_html("<span style='color: #94A3B8; font-size: 0.8rem;'>{}</span>", obj.email or "-")
+        return format_html("<span class='text-xs text-gray-500 dark:text-gray-400'>{}</span>", obj.email or "-")
 
     @display(description="Perfis")
     def mostrar_perfis(self, obj):
         if not obj.perfis:
             return mark_safe("<span class='cdm-status-inactive'>—</span>")
-        badges = []
-        for p in obj.perfis:
-            badges.append(f"<span class='cdm-badge cdm-badge-blue'>{p}</span>")
-        return mark_safe(f"<div class='cdm-badge-container'>{''.join(badges)}</div>")
+        badges = [f"<span class='cdm-badge cdm-badge-blue'>{p}</span>" for p in obj.perfis]
+        return mark_safe(f"<div class='flex flex-wrap gap-1'>{''.join(badges)}</div>")
 
     @display(description="Módulos Liberados")
     def mostrar_modulos(self, obj):
         if not obj.modulos:
             return mark_safe("<span class='cdm-status-inactive'>—</span>")
-        badges = []
-        for m in obj.modulos:
-            label = str(m).upper()
-            badges.append(f"<span class='cdm-badge cdm-badge-cyan'>{label}</span>")
-        return mark_safe(f"<div class='cdm-badge-container'>{''.join(badges)}</div>")
+        badges = [f"<span class='cdm-badge cdm-badge-cyan'>{str(m).upper()}</span>" for m in obj.modulos]
+        return mark_safe(f"<div class='flex flex-wrap gap-1'>{''.join(badges)}</div>")
 
     @display(description="Staff")
     def status_staff(self, obj):
@@ -84,7 +79,7 @@ class CadastroGeralAdmin(ModelAdmin):
 
     @display(description="Nome")
     def nome_formatado(self, obj):
-        return format_html("<strong style='color:#FFFFFF;'>{}</strong>", (obj.nome or "").title())
+        return format_html("<strong class='text-gray-900 dark:text-white'>{}</strong>", (obj.nome or "").title())
 
     @display(description="Liderança")
     def tag_lider(self, obj):
@@ -101,7 +96,7 @@ class JornadaCadastroAdmin(ModelAdmin):
 
     @display(description="Nome")
     def nome_formatado(self, obj):
-        return format_html("<strong style='color:#FFFFFF;'>{}</strong>", (obj.nome or "").title())
+        return format_html("<strong class='text-gray-900 dark:text-white'>{}</strong>", (obj.nome or "").title())
 
     @display(description="Etapa da Jornada")
     def tag_etapa(self, obj):
