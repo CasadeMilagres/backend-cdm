@@ -41,7 +41,10 @@ UNFOLD = {
     "SITE_TITLE": "Casa de Milagres",
     "SITE_HEADER": "Casa de Milagres",
     "SITE_URL": "/admin/",
-    "SITE_LOGO": lambda request: static("img/logo-completa.png"),
+    "SITE_LOGO": {
+        "light": lambda request: static("img/logo-completa.png"),
+        "dark": lambda request: static("img/logo-completa.png"),
+    },
     "DASHBOARD_CALLBACK": "usuarios.views.dashboard_callback",
     "STYLES": [
         lambda request: static("css/custom.css"),
@@ -51,7 +54,7 @@ UNFOLD = {
             "50": "238 242 255",
             "100": "224 231 255",
             "200": "199 210 254",
-            "300": "0 163 224",     # Ciano
+            "300": "0 163 224",     # Ciano CDM
             "400": "0 130 200",
             "500": "29 20 179",    # Azul Moderno CDM
             "600": "24 16 150",
@@ -181,12 +184,12 @@ UNFOLD = {
                 "separator": True,
                 "items": [
                     {
-                        "title": "Configurações do App",
+                        "title": "Configurações & Visibilidade do App",
                         "icon": "app_settings_alt",
                         "link": lambda r: reverse_lazy("admin:usuarios_configuracaosistema_changelist"),
                     },
                     {
-                        "title": "Notificações Push / Whats",
+                        "title": "Notificações Push / WhatsApp",
                         "icon": "notifications_active",
                         "link": lambda r: reverse_lazy("admin:usuarios_filanotificacaopush_changelist"),
                     },

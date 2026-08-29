@@ -1,87 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
-:root {
-  /* Paleta Oficial CDM */
-  --cdm-azul-moderno: #1D14B3;
-  --cdm-ciano: #00A3E0;
-  --cdm-preto: #0A0A0C;
-  --cdm-branco: #FFFFFF;
-  
-  /* Gradiente Oficial */
-  --cdm-gradient-primary: linear-gradient(135deg, #1D14B3 0%, #00A3E0 100%);
-  --cdm-gradient-dark: linear-gradient(135deg, #0A0A0C 0%, #1D14B3 100%);
-}
-
-html, body, table, input, button, select, textarea {
-  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
-}
-
-/* Fundo da Aplicação */
-body {
+html, body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
   background-color: #F4F6F9 !important;
-  color: #1E293B !important;
 }
 
-/* Header & Logo */
-header img {
-  max-height: 42px !important;
+/* Ajuste da logo no menu lateral */
+aside a img, header img {
+  max-height: 48px !important;
+  width: auto !important;
   object-fit: contain !important;
 }
 
-/* Card KPI com Gradiente CDM */
-.cdm-kpi-card {
-  background: var(--cdm-gradient-primary) !important;
-  color: var(--cdm-branco) !important;
-  border-radius: 14px !important;
-  padding: 20px !important;
-  box-shadow: 0 10px 25px -5px rgba(29, 20, 179, 0.25) !important;
-}
-
-.cdm-kpi-card-dark {
-  background: var(--cdm-gradient-dark) !important;
-  color: var(--cdm-branco) !important;
-  border-radius: 14px !important;
-  padding: 20px !important;
-  box-shadow: 0 10px 25px -5px rgba(10, 10, 12, 0.3) !important;
-}
-
-/* Tabelas e Modais */
+/* Estilização padrão de tabela */
 table thead th {
-  background-color: #FFFFFF !important;
-  color: var(--cdm-azul-moderno) !important;
+  color: #1D14B3 !important;
   font-weight: 800 !important;
-  text-transform: uppercase !important;
   font-size: 0.72rem !important;
-  letter-spacing: 0.05em !important;
-  border-bottom: 2px solid #E2E8F0 !important;
+  text-transform: uppercase !important;
 }
-
-/* Botões Principais */
-.bg-primary-600 {
-  background: var(--cdm-gradient-primary) !important;
-  border: none !important;
-  color: #FFFFFF !important;
-  font-weight: 800 !important;
-  border-radius: 8px !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.bg-primary-600:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(0, 163, 224, 0.4) !important;
-}
-
-/* Badges e Status */
-.cdm-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.70rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-.cdm-badge-blue { background: rgba(29, 20, 179, 0.12); color: var(--cdm-azul-moderno); }
-.cdm-badge-cyan { background: rgba(0, 163, 224, 0.15); color: #0284C7; }
-.cdm-badge-emerald { background: rgba(16, 185, 129, 0.15); color: #047857; }
-.cdm-badge-amber { background: rgba(245, 158, 11, 0.15); color: #B45309; }
