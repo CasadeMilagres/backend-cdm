@@ -54,13 +54,13 @@ UNFOLD = {
             "50": "238 242 255",
             "100": "224 231 255",
             "200": "199 210 254",
-            "300": "0 163 224",     # Ciano CDM
+            "300": "0 163 224",
             "400": "0 130 200",
-            "500": "29 20 179",    # Azul Moderno CDM
+            "500": "29 20 179",
             "600": "24 16 150",
             "700": "20 14 122",
             "800": "16 12 99",
-            "900": "10 10 12",     # Preto CDM
+            "900": "10 10 12",
             "950": "5 5 7",
         },
     },
@@ -89,6 +89,11 @@ UNFOLD = {
                         "link": lambda r: reverse_lazy("admin:usuarios_cadastrogeral_changelist"),
                     },
                     {
+                        "title": "Líderes de GC Registrados",
+                        "icon": "star",
+                        "link": lambda r: f"{reverse_lazy('admin:usuarios_cadastrogeral_changelist')}?isLider__exact=Sim",
+                    },
+                    {
                         "title": "Usuários do Sistema",
                         "icon": "group",
                         "link": lambda r: reverse_lazy("admin:usuarios_usuario_changelist"),
@@ -101,18 +106,28 @@ UNFOLD = {
                 ],
             },
             {
-                "title": "Células / Grupos de Conexão",
+                "title": "Grupos de Conexão (GCs)",
                 "separator": True,
                 "items": [
                     {
-                        "title": "Grupos de Conexão (GCs)",
+                        "title": "Gerenciar GCs",
                         "icon": "hub",
                         "link": lambda r: reverse_lazy("admin:usuarios_grupoconexao_changelist"),
                     },
                     {
-                        "title": "Lançamentos Semanais",
-                        "icon": "event_available",
+                        "title": "Lançamento Semanal (Novo)",
+                        "icon": "add_task",
+                        "link": lambda r: reverse_lazy("admin:usuarios_gclancamentosemanal_add"),
+                    },
+                    {
+                        "title": "Consulta de Lançamentos",
+                        "icon": "find_in_page",
                         "link": lambda r: reverse_lazy("admin:usuarios_gclancamentosemanal_changelist"),
+                    },
+                    {
+                        "title": "Formulários & Configurações",
+                        "icon": "rule",
+                        "link": lambda r: reverse_lazy("admin:usuarios_formularioavulso_changelist"),
                     },
                 ],
             },
@@ -121,8 +136,8 @@ UNFOLD = {
                 "separator": True,
                 "items": [
                     {
-                        "title": "Cursos / Módulos",
-                        "icon": "school",
+                        "title": "Cursos & Módulos",
+                        "icon": "auto_stories",
                         "link": lambda r: reverse_lazy("admin:usuarios_idemodulo_changelist"),
                     },
                     {
@@ -134,6 +149,21 @@ UNFOLD = {
                         "title": "Inscrições nos Cursos",
                         "icon": "how_to_reg",
                         "link": lambda r: reverse_lazy("admin:usuarios_ideinscricao_changelist"),
+                    },
+                    {
+                        "title": "Sala de Aula / Presenças",
+                        "icon": "co_present",
+                        "link": lambda r: reverse_lazy("admin:usuarios_idesala_changelist"),
+                    },
+                    {
+                        "title": "Formulários de Matrícula",
+                        "icon": "feed",
+                        "link": lambda r: reverse_lazy("admin:usuarios_ideformulario_changelist"),
+                    },
+                    {
+                        "title": "Comunicação & Pushes",
+                        "icon": "campaign",
+                        "link": lambda r: reverse_lazy("admin:usuarios_filanotificacaopush_changelist"),
                     },
                 ],
             },
@@ -147,12 +177,12 @@ UNFOLD = {
                         "link": lambda r: f"{reverse_lazy('admin:usuarios_produtocomercial_changelist')}?modulo__exact=cafeteria",
                     },
                     {
-                        "title": "Vendas da Cafeteria",
+                        "title": "Vendas Realizadas",
                         "icon": "point_of_sale",
                         "link": lambda r: f"{reverse_lazy('admin:usuarios_vendacomercial_changelist')}?modulo__exact=cafeteria",
                     },
                     {
-                        "title": "Fiados / Pendências",
+                        "title": "Contas Pendentes (Fiados)",
                         "icon": "pending_actions",
                         "link": lambda r: f"{reverse_lazy('admin:usuarios_pendenciacomercial_changelist')}?modulo__exact=cafeteria",
                     },
@@ -168,12 +198,12 @@ UNFOLD = {
                         "link": lambda r: f"{reverse_lazy('admin:usuarios_produtocomercial_changelist')}?modulo__exact=livraria",
                     },
                     {
-                        "title": "Vendas da Livraria",
+                        "title": "Vendas Realizadas",
                         "icon": "sell",
                         "link": lambda r: f"{reverse_lazy('admin:usuarios_vendacomercial_changelist')}?modulo__exact=livraria",
                     },
                     {
-                        "title": "Fiados / Pendências",
+                        "title": "Contas Pendentes (Fiados)",
                         "icon": "request_quote",
                         "link": lambda r: f"{reverse_lazy('admin:usuarios_pendenciacomercial_changelist')}?modulo__exact=livraria",
                     },
@@ -184,14 +214,9 @@ UNFOLD = {
                 "separator": True,
                 "items": [
                     {
-                        "title": "Configurações & Visibilidade do App",
+                        "title": "Visibilidade & Exibição no App",
                         "icon": "app_settings_alt",
                         "link": lambda r: reverse_lazy("admin:usuarios_configuracaosistema_changelist"),
-                    },
-                    {
-                        "title": "Notificações Push / WhatsApp",
-                        "icon": "notifications_active",
-                        "link": lambda r: reverse_lazy("admin:usuarios_filanotificacaopush_changelist"),
                     },
                 ],
             },

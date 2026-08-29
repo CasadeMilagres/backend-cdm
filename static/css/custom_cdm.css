@@ -1,21 +1,65 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
-html, body {
-  font-family: 'Plus Jakarta Sans', sans-serif !important;
-  background-color: #F4F6F9 !important;
+:root {
+  --cdm-azul: #1D14B3;
+  --cdm-ciano: #00A3E0;
+  --cdm-preto: #0A0A0C;
+  --cdm-bg-suave: #ECEFF4;
 }
 
-/* Ajuste da logo no menu lateral */
+/* Força a cor de fundo em todas as camadas internas do Unfold */
+html, body, main, #main, 
+.bg-gray-50, .bg-slate-50, .bg-slate-100,
+div[class*="bg-gray-50"], div[class*="bg-slate-50"] {
+  background-color: var(--cdm-bg-suave) !important;
+}
+
+/* Tipografia Global */
+html, body, table, input, button, select, textarea {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* Ajuste da Logo */
 aside a img, header img {
   max-height: 48px !important;
   width: auto !important;
   object-fit: contain !important;
 }
 
-/* Estilização padrão de tabela */
+/* Estilo de Tabelas */
+table {
+  background-color: #FFFFFF !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
 table thead th {
-  color: #1D14B3 !important;
+  background-color: #F8FAFC !important;
+  color: var(--cdm-azul) !important;
   font-weight: 800 !important;
   font-size: 0.72rem !important;
   text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 2px solid #E2E8F0 !important;
+}
+
+/* Cards Customizados com Gradiente */
+.card-gradiente-azul {
+  background: linear-gradient(135deg, #1D14B3 0%, #3B82F6 100%) !important;
+}
+.card-gradiente-ciano {
+  background: linear-gradient(135deg, #00A3E0 0%, #06B6D4 100%) !important;
+}
+.card-gradiente-escuro {
+  background: linear-gradient(135deg, #0A0A0C 0%, #1D14B3 100%) !important;
+}
+.card-gradiente-verde {
+  background: linear-gradient(135deg, #059669 0%, #10B981 100%) !important;
+}
+.card-gradiente-roxo {
+  background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%) !important;
+}
+.card-gradiente-laranja {
+  background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%) !important;
 }
