@@ -298,3 +298,4 @@ REST_FRAMEWORK = {
 }
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+WHITENOISE_MANIFEST_STRICT = False
