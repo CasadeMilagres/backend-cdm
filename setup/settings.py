@@ -2,6 +2,7 @@ import os
 import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
+from django.urls import reverse_lazy
 
 load_dotenv()
 
@@ -37,15 +38,58 @@ INSTALLED_APPS = [
 
 UNFOLD = {
     "SITE_TITLE": "Casa de Milagres",
-    "SITE_HEADER": "CDM Gestão Ministerial",
-    "SITE_URL": "/",
-    "SITE_SYMBOL": "church",
-    "SHOW_HISTORY": True,
-    "SHOW_VIEW_ON_SITE": False,
-    "DASHBOARD_CALLBACK": "usuarios.views.dashboard_callback",
-    "STYLES": [
-        lambda request: "css/custom_cdm.css?v=4", 
-    ],
+    "SITE_HEADER": "Casa de Milagres",
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,  # Oculta a lista padrão desordenada do Django
+        "navigation": [
+            {
+                "title": "Membresia & Liderança",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Base Global de Pessoas",
+                        "icon": "person",
+                        "link": lambda request: reverse_lazy("admin:usuarios_cadastrogeral_changelist"),
+                    },
+                    {
+                        "title": "Usuários do Sistema",
+                        "icon": "group",
+                        "link": lambda request: reverse_lazy("admin:usuarios_usuario_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Células / Grupos de Conexão",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Grupos de Conexão (GCs)",
+                        "icon": "hub",
+                        "link": lambda request: reverse_lazy("admin:celulas_grupoconexao_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Ensino (IDE)",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Cursos / Módulos",
+                        "icon": "school",
+                        "link": lambda request: reverse_lazy("admin:ensino_curso_changelist"),
+                    },
+                    {
+                        "title": "Turmas Ativas",
+                        "icon": "groups",
+                        "link": lambda request: reverse_lazy("admin:ensino_turma_changelist"),
+                    },
+                ],
+            },
+        ],
+    },
+
+
     "COLORS": {
         "primary": {
             "50": "235 248 255",
