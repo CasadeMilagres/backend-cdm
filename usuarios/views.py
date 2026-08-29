@@ -204,17 +204,6 @@ class GcLancamentoSemanalViewSet(viewsets.ModelViewSet):
     filter_backends = [SearchFilter]
     search_fields = ['lider', 'bairro', 'usuarioResponsavel']
 
-class ConfiguracaoSistemaViewSet(viewsets.ModelViewSet):
-    queryset = ConfiguracaoSistema.objects.all()
-    serializer_class = ConfiguracaoSistemaSerializer
-    lookup_field = 'chave'
-
-    # 🔥 Libera apenas a LEITURA (GET) para as páginas públicas
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return [AllowAny()]
-        return [IsAuthenticated()]
-
 class IdeModuloViewSet(viewsets.ModelViewSet):
     queryset = IdeModulo.objects.all().order_by('nome')
     serializer_class = IdeModuloSerializer
@@ -520,7 +509,6 @@ class JornadaCadastroViewSet(viewsets.ModelViewSet):
     filterset_fields = ['etapa', 'exportado', 'jornadaConcluida']
 
     def get_permissions(self):
-        # Validação segura da ação sem gerar AttributeError
         if getattr(self, 'action', None) in ['create', 'retrieve']:
             return [AllowAny()]
         return [IsAuthenticated()]

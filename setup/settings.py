@@ -39,64 +39,15 @@ INSTALLED_APPS = [
 UNFOLD = {
     "SITE_TITLE": "Casa de Milagres",
     "SITE_HEADER": "Casa de Milagres",
-    "SIDEBAR": {
-        "show_search": True,
-        "show_all_applications": False,  # Oculta a lista padrão desordenada do Django
-        "navigation": [
-            {
-                "title": "Membresia & Liderança",
-                "separator": True,
-                "items": [
-                    {
-                        "title": "Base Global de Pessoas",
-                        "icon": "person",
-                        "link": lambda request: reverse_lazy("admin:usuarios_cadastrogeral_changelist"),
-                    },
-                    {
-                        "title": "Usuários do Sistema",
-                        "icon": "group",
-                        "link": lambda request: reverse_lazy("admin:usuarios_usuario_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": "Células / Grupos de Conexão",
-                "separator": True,
-                "items": [
-                    {
-                        "title": "Grupos de Conexão (GCs)",
-                        "icon": "hub",
-                        "link": lambda request: reverse_lazy("admin:celulas_grupoconexao_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": "Ensino (IDE)",
-                "separator": True,
-                "items": [
-                    {
-                        "title": "Cursos / Módulos",
-                        "icon": "school",
-                        "link": lambda request: reverse_lazy("admin:ensino_curso_changelist"),
-                    },
-                    {
-                        "title": "Turmas Ativas",
-                        "icon": "groups",
-                        "link": lambda request: reverse_lazy("admin:ensino_turma_changelist"),
-                    },
-                ],
-            },
-        ],
-    },
-
-
+    "SITE_URL": "/admin/",
+    "DASHBOARD_CALLBACK": "usuarios.views.dashboard_callback",
     "COLORS": {
         "primary": {
-            "50": "235 248 255",
-            "100": "206 240 253",
-            "200": "157 226 252",
-            "300": "0 163 224",    # Ciano CDM (#00A3E0)
-            "400": "0 130 200",
+            "50": "238 242 255",
+            "100": "224 231 255",
+            "200": "199 210 254",
+            "300": "165 180 252",
+            "400": "0 163 224",    # Ciano CDM (#00A3E0)
             "500": "29 20 179",    # Azul Moderno CDM (#1D14B3)
             "600": "24 16 150",
             "700": "20 14 122",
@@ -115,23 +66,23 @@ UNFOLD = {
                 "items": [
                     {
                         "title": "Base Global de Pessoas",
-                        "icon": "people",
-                        "link": lambda request: "/admin/usuarios/cadastrogeral/",
+                        "icon": "person",
+                        "link": lambda r: reverse_lazy("admin:usuarios_cadastrogeral_changelist"),
                     },
                     {
                         "title": "Usuários do Sistema",
-                        "icon": "badge",
-                        "link": lambda request: "/admin/usuarios/usuario/",
+                        "icon": "group",
+                        "link": lambda r: reverse_lazy("admin:usuarios_usuario_changelist"),
                     },
                     {
                         "title": "Jornada do Membro",
                         "icon": "timeline",
-                        "link": lambda request: "/admin/usuarios/jornadacadastro/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_jornadacadastro_changelist"),
                     },
                     {
                         "title": "Landing Pages Avulsas",
                         "icon": "web",
-                        "link": lambda request: "/admin/usuarios/formularioavulso/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_formularioavulso_changelist"),
                     },
                 ],
             },
@@ -141,13 +92,13 @@ UNFOLD = {
                 "items": [
                     {
                         "title": "Grupos de Conexão (GCs)",
-                        "icon": "diversity_3",
-                        "link": lambda request: "/admin/usuarios/grupoconexao/",
+                        "icon": "hub",
+                        "link": lambda r: reverse_lazy("admin:usuarios_grupoconexao_changelist"),
                     },
                     {
                         "title": "Lançamentos Semanais",
                         "icon": "event_available",
-                        "link": lambda request: "/admin/usuarios/gclancamentosemanal/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_gclancamentosemanal_changelist"),
                     },
                 ],
             },
@@ -158,27 +109,27 @@ UNFOLD = {
                     {
                         "title": "Cursos / Módulos",
                         "icon": "school",
-                        "link": lambda request: "/admin/usuarios/idemodulo/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_idemodulo_changelist"),
                     },
                     {
                         "title": "Turmas Ativas",
                         "icon": "groups",
-                        "link": lambda request: "/admin/usuarios/ideturma/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_ideturma_changelist"),
                     },
                     {
                         "title": "Inscrições nos Cursos",
                         "icon": "how_to_reg",
-                        "link": lambda request: "/admin/usuarios/ideinscricao/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_ideinscricao_changelist"),
                     },
                     {
                         "title": "Diário de Aulas / Presenças",
                         "icon": "assignment",
-                        "link": lambda request: "/admin/usuarios/idesala/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_idesala_changelist"),
                     },
                     {
                         "title": "Formulários de Matrícula",
                         "icon": "feed",
-                        "link": lambda request: "/admin/usuarios/ideformulario/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_ideformulario_changelist"),
                     },
                 ],
             },
@@ -189,17 +140,17 @@ UNFOLD = {
                     {
                         "title": "Ministérios",
                         "icon": "volunteer_activism",
-                        "link": lambda request: "/admin/usuarios/ministerio/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_ministerio_changelist"),
                     },
                     {
                         "title": "Voluntários Registrados",
                         "icon": "assignment_ind",
-                        "link": lambda request: "/admin/usuarios/voluntario/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_voluntario_changelist"),
                     },
                     {
                         "title": "Escalas & Eventos",
                         "icon": "event_note",
-                        "link": lambda request: "/admin/usuarios/escalaministerio/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_escalaministerio_changelist"),
                     },
                 ],
             },
@@ -210,27 +161,27 @@ UNFOLD = {
                     {
                         "title": "Produtos / Livraria & Café",
                         "icon": "inventory_2",
-                        "link": lambda request: "/admin/usuarios/produtocomercial/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_produtocomercial_changelist"),
                     },
                     {
                         "title": "Vendas Concluídas",
                         "icon": "point_of_sale",
-                        "link": lambda request: "/admin/usuarios/vendacomercial/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_vendacomercial_changelist"),
                     },
                     {
                         "title": "Contas Pendentes (Fiados)",
                         "icon": "pending_actions",
-                        "link": lambda request: "/admin/usuarios/pendenciacomercial/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_pendenciacomercial_changelist"),
                     },
                     {
                         "title": "Contas a Pagar",
                         "icon": "request_quote",
-                        "link": lambda request: "/admin/usuarios/contapagarcomercial/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_contapagarcomercial_changelist"),
                     },
                     {
                         "title": "Entradas de Estoque",
                         "icon": "move_to_inbox",
-                        "link": lambda request: "/admin/usuarios/entradaestoquecomercial/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_entradaestoquecomercial_changelist"),
                     },
                 ],
             },
@@ -241,12 +192,12 @@ UNFOLD = {
                     {
                         "title": "Fila de Mensagens / WhatsApp",
                         "icon": "chat",
-                        "link": lambda request: "/admin/usuarios/filanotificacaopush/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_filanotificacaopush_changelist"),
                     },
                     {
                         "title": "Configurações Globais",
                         "icon": "settings",
-                        "link": lambda request: "/admin/usuarios/configuracaosistema/",
+                        "link": lambda r: reverse_lazy("admin:usuarios_configuracaosistema_changelist"),
                     },
                 ],
             },

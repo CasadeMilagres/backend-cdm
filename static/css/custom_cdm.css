@@ -1,29 +1,9 @@
-/* FORÇAR O FUNDO CLARO EM TODAS AS CAMADAS DO UNFOLD */
-html, 
-body, 
-main, 
-#main, 
-.bg-gray-50, 
-.dark\:bg-gray-900 {
-    background-color: #F4F7FB !important; /* Cor clara, suave e sem ser branco puro */
-}
-
-aside, 
-.dark\:bg-gray-800 {
-    background-color: #E2E8F0 !important; /* Barra lateral levemente destacada */
-}
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Cores da Paleta CDM */
   --cdm-azul: #1D14B3;
   --cdm-ciano: #00A3E0;
-  --cdm-preto: #000000;
-  --cdm-branco: #FFFFFF;
-  
-  /* 🔥 AQUI ESTÁ A MÁGICA: Um Cinza-Azulado suave em vez de branco puro */
-  --cdm-fundo-claro: #E2E8F0; 
+  --cdm-bg-light: #F8FAFC;
 }
 
 /* Tipografia Global */
@@ -31,117 +11,42 @@ html, body, table, input, button, select, textarea {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
-/* Fundo Geral da Aplicação com a nova cor */
-body, main, #main {
-  background-color: var(--cdm-fundo-claro) !important;
+/* Suavização de fundo e legibilidade das tabelas */
+body {
+  background-color: var(--cdm-bg-light);
 }
 
-/* Opcional: Deixar a barra lateral um pouquinho mais escura que o fundo para dar contraste */
-aside {
-  background-color: #F1F5F9 !important;
-  border-right: 1px solid #CBD5E1 !important;
-}
-
-aside span.text-gray-500 {
-  color: #94A3B8 !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.05em !important;
-}
-
-/* Links do menu inativos */
-aside a {
-  color: #475569 !important;
-  font-weight: 600 !important;
-}
-
-/* Item do menu Ativo */
-aside .bg-primary-100, aside .dark\:bg-primary-900\/20 {
-  background: rgba(0, 163, 224, 0.08) !important; /* Fundo Ciano bem sutil */
-  border-left: 4px solid var(--cdm-ciano) !important;
+table th {
   color: var(--cdm-azul) !important;
-}
-
-/* Ícones e Textos do menu ativo */
-aside .text-primary-600, aside .dark\:text-primary-500 {
-  color: var(--cdm-azul) !important;
-  font-weight: 800 !important;
-}
-
-/* Hover nos itens do menu */
-aside a:hover {
-  background: #F1F5F9 !important;
-  color: var(--cdm-azul) !important;
-}
-
-/* =========================================
-   2. TABELAS (LISTAGENS DO DJANGO) - CLARAS
-   ========================================= */
-table {
-  background-color: var(--cdm-branco) !important;
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
-}
-
-thead th {
-  background-color: var(--cdm-branco) !important;
-  color: var(--cdm-azul) !important; /* Letras azuis nos títulos da tabela */
-  font-size: 0.70rem !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  padding: 16px !important;
-  border-bottom: 2px solid #E2E8F0 !important;
 }
 
-tbody tr {
-  background-color: var(--cdm-branco) !important;
-  border-bottom: 1px solid #F1F5F9 !important;
-}
-
-tbody td {
-  color: #334155 !important;
-}
-
-tbody tr:hover {
-  background-color: #F8FAFC !important;
-}
-
-/* =========================================
-   3. BOTÕES MODERNOS E DESTAQUES
-   ========================================= */
-/* Botões principais (Salvar, Adicionar, etc) */
-.bg-primary-600, .dark\:bg-primary-600 {
+/* Botões de Ação Principal */
+.bg-primary-600 {
   background-color: var(--cdm-azul) !important;
-  border: none !important;
-  color: var(--cdm-branco) !important;
-  font-weight: 800 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  border-radius: 8px !important;
+  color: #FFFFFF !important;
   transition: all 0.2s ease-in-out !important;
 }
 
-.bg-primary-600:hover, .dark\:bg-primary-600:hover {
+.bg-primary-600:hover {
   background-color: var(--cdm-ciano) !important;
-  transform: scale(0.98);
 }
 
-/* =========================================
-   4. BADGES (ETIQUETAS / STATUS)
-   ========================================= */
+/* Badges Customizadas de Status */
 .cdm-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  padding: 4px 10px !important;
-  border-radius: 8px !important;
-  font-size: 0.65rem !important;
-  font-weight: 900 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.70rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
-.cdm-badge-blue { background: rgba(29, 20, 179, 0.1) !important; color: var(--cdm-azul) !important; }
-.cdm-badge-cyan { background: rgba(0, 163, 224, 0.1) !important; color: var(--cdm-ciano) !important; }
-.cdm-badge-emerald { background: rgba(16, 185, 129, 0.1) !important; color: #059669 !important; }
-.cdm-badge-amber { background: rgba(245, 158, 11, 0.1) !important; color: #D97706 !important; }
+.cdm-badge-blue { background: rgba(29, 20, 179, 0.1); color: var(--cdm-azul); }
+.cdm-badge-cyan { background: rgba(0, 163, 224, 0.1); color: var(--cdm-ciano); }
+.cdm-badge-emerald { background: rgba(16, 185, 129, 0.1); color: #059669; }
+.cdm-badge-amber { background: rgba(245, 158, 11, 0.1); color: #D97706; }

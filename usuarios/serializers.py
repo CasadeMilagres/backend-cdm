@@ -32,11 +32,6 @@ class GcLancamentoSemanalSerializer(serializers.ModelSerializer):
         model = GcLancamentoSemanal
         fields = '__all__'
 
-class ConfiguracaoSistemaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ConfiguracaoSistema
-        fields = '__all__'
-
 class FormularioAvulsoSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormularioAvulso
