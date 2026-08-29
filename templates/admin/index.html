@@ -1,77 +1,42 @@
-{% extends "admin/base.html" %}
-{% load i18n unfold %}
+{% extends 'unfold/layouts/base.html' %}
 
 {% block content %}
-<div class="space-y-6 pb-12 font-sans">
+<div class="px-4 py-6 space-y-6">
+  
+  <!-- Header da Dashboard -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-black text-gray-900 dark:text-white">Painel Geral de Controle</h1>
+      <p class="text-sm text-gray-500">Casa de Milagres — Gestão Ministerial & Operacional</p>
+    </div>
+  </div>
 
-    <!-- HERO HEADER: Usando o Gradiente Ciano -> Azul -->
-    <div class="cdm-hero-mesh p-8 sm:p-12 text-white relative overflow-hidden">
-        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div>
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-4">
-                    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-white">Painel Pastoral & Executivo</span>
-                </div>
-                <h1 class="text-4xl sm:text-5xl font-black uppercase text-white tracking-tight drop-shadow-md">
-                    Casa de Milagres
-                </h1>
-                <p class="text-white/80 text-sm font-bold mt-2 max-w-lg leading-relaxed uppercase tracking-widest">
-                    Governança eclesiástica integrada.
-                </p>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-3">
-                <a href="/admin/usuarios/jornadacadastro/" class="bg-black text-white hover:bg-gray-900 px-6 py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-xl transition-all active:scale-95">
-                    Jornada do Membro &rarr;
-                </a>
-                <a href="/admin/usuarios/gclancamentosemanal/" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm px-6 py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all active:scale-95">
-                    Lançamentos GC
-                </a>
-            </div>
-        </div>
+  <!-- Cards KPI Principais -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="cdm-kpi-card">
+      <span class="text-xs uppercase font-bold tracking-wider opacity-80">Membros Ativos</span>
+      <p class="text-3xl font-black mt-1">{{ kpi.total_membros }}</p>
+      <span class="text-xs opacity-90 mt-2 block">{{ kpi.total_lideres }} Líderes de GC</span>
     </div>
 
-    <!-- CARDS DE INDICADORES (KPIs) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 px-2">
-        <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between">
-            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Membros Ativos</span>
-            <div class="my-3">
-                <span class="text-4xl font-black text-[#1D14B3] tracking-tighter">{{ kpi.total_membros }}</span>
-            </div>
-            <div class="pt-3 border-t border-gray-100 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                <strong class="text-gray-800 font-black">{{ kpi.total_lideres }}</strong> líderes de GC
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between">
-            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Grupos de Conexão</span>
-            <div class="my-3">
-                <span class="text-4xl font-black text-[#00A3E0] tracking-tighter">{{ kpi.total_gcs }}</span>
-            </div>
-            <div class="pt-3 border-t border-gray-100 text-[10px] text-green-600 font-black uppercase tracking-widest">
-                {{ kpi.gcs_ocorridos }} relatórios entregues
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between">
-            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Turmas de Ensino (IDE)</span>
-            <div class="my-3">
-                <span class="text-4xl font-black text-[#1D14B3] tracking-tighter">{{ kpi.turmas_ativas }}</span>
-            </div>
-            <div class="pt-3 border-t border-gray-100 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                <strong class="text-gray-800 font-black">{{ kpi.total_alunos_ide }}</strong> alunos matriculados
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between">
-            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Comercial (Mês Vigente)</span>
-            <div class="my-3">
-                <span class="text-3xl font-black text-green-500 tracking-tighter">R$ {{ kpi.faturamento_mes|floatformat:2 }}</span>
-            </div>
-            <div class="pt-3 border-t border-gray-100 text-[10px] text-amber-500 font-black uppercase tracking-widest">
-                R$ {{ kpi.total_pendencias_abertas|floatformat:2 }} em fiados
-            </div>
-        </div>
+    <div class="cdm-kpi-card-dark">
+      <span class="text-xs uppercase font-bold tracking-wider opacity-80">Grupos de Conexão</span>
+      <p class="text-3xl font-black mt-1">{{ kpi.total_gcs }}</p>
+      <span class="text-xs opacity-90 mt-2 block">R$ {{ kpi.total_oferta_gc|floatformat:2 }} em ofertas</span>
     </div>
+
+    <div class="cdm-kpi-card">
+      <span class="text-xs uppercase font-bold tracking-wider opacity-80">Ensino (IDE)</span>
+      <p class="text-3xl font-black mt-1">{{ kpi.total_alunos_ide }}</p>
+      <span class="text-xs opacity-90 mt-2 block">{{ kpi.turmas_ativas }} Turmas em Andamento</span>
+    </div>
+
+    <div class="cdm-kpi-card-dark">
+      <span class="text-xs uppercase font-bold tracking-wider opacity-80">Faturamento Mês</span>
+      <p class="text-3xl font-black mt-1">R$ {{ kpi.faturamento_mes|floatformat:2 }}</p>
+      <span class="text-xs opacity-90 mt-2 block">R$ {{ kpi.total_pendencias_abertas|floatformat:2 }} em Fiados</span>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

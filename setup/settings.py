@@ -3,6 +3,7 @@ import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
 from django.urls import reverse_lazy
+from django.templatetags.static import static
 
 load_dotenv()
 
@@ -40,26 +41,41 @@ UNFOLD = {
     "SITE_TITLE": "Casa de Milagres",
     "SITE_HEADER": "Casa de Milagres",
     "SITE_URL": "/admin/",
+    "SITE_LOGO": lambda request: static("img/logo-completa.png"),
     "DASHBOARD_CALLBACK": "usuarios.views.dashboard_callback",
+    "STYLES": [
+        lambda request: static("css/custom.css"),
+    ],
     "COLORS": {
         "primary": {
             "50": "238 242 255",
             "100": "224 231 255",
             "200": "199 210 254",
-            "300": "165 180 252",
-            "400": "0 163 224",    # Ciano CDM (#00A3E0)
-            "500": "29 20 179",    # Azul Moderno CDM (#1D14B3)
+            "300": "0 163 224",     # Ciano
+            "400": "0 130 200",
+            "500": "29 20 179",    # Azul Moderno CDM
             "600": "24 16 150",
             "700": "20 14 122",
             "800": "16 12 99",
-            "900": "10 8 66",
-            "950": "6 5 45",
+            "900": "10 10 12",     # Preto CDM
+            "950": "5 5 7",
         },
     },
     "SIDEBAR": {
         "show_search": True,
         "show_all_applications": False,
         "navigation": [
+            {
+                "title": "Visão Geral",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Dashboard Principal",
+                        "icon": "dashboard",
+                        "link": lambda r: reverse_lazy("admin:index"),
+                    },
+                ],
+            },
             {
                 "title": "Membresia & Liderança",
                 "separator": True,
@@ -78,11 +94,6 @@ UNFOLD = {
                         "title": "Jornada do Membro",
                         "icon": "timeline",
                         "link": lambda r: reverse_lazy("admin:usuarios_jornadacadastro_changelist"),
-                    },
-                    {
-                        "title": "Landing Pages Avulsas",
-                        "icon": "web",
-                        "link": lambda r: reverse_lazy("admin:usuarios_formularioavulso_changelist"),
                     },
                 ],
             },
@@ -121,83 +132,63 @@ UNFOLD = {
                         "icon": "how_to_reg",
                         "link": lambda r: reverse_lazy("admin:usuarios_ideinscricao_changelist"),
                     },
-                    {
-                        "title": "Diário de Aulas / Presenças",
-                        "icon": "assignment",
-                        "link": lambda r: reverse_lazy("admin:usuarios_idesala_changelist"),
-                    },
-                    {
-                        "title": "Formulários de Matrícula",
-                        "icon": "feed",
-                        "link": lambda r: reverse_lazy("admin:usuarios_ideformulario_changelist"),
-                    },
                 ],
             },
             {
-                "title": "Operação Ministerial",
+                "title": "Cafeteria CDM",
                 "separator": True,
                 "items": [
                     {
-                        "title": "Ministérios",
-                        "icon": "volunteer_activism",
-                        "link": lambda r: reverse_lazy("admin:usuarios_ministerio_changelist"),
+                        "title": "Produtos da Cafeteria",
+                        "icon": "local_cafe",
+                        "link": lambda r: f"{reverse_lazy('admin:usuarios_produtocomercial_changelist')}?modulo__exact=cafeteria",
                     },
                     {
-                        "title": "Voluntários Registrados",
-                        "icon": "assignment_ind",
-                        "link": lambda r: reverse_lazy("admin:usuarios_voluntario_changelist"),
-                    },
-                    {
-                        "title": "Escalas & Eventos",
-                        "icon": "event_note",
-                        "link": lambda r: reverse_lazy("admin:usuarios_escalaministerio_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": "Comercial & Financeiro",
-                "separator": True,
-                "items": [
-                    {
-                        "title": "Produtos / Livraria & Café",
-                        "icon": "inventory_2",
-                        "link": lambda r: reverse_lazy("admin:usuarios_produtocomercial_changelist"),
-                    },
-                    {
-                        "title": "Vendas Concluídas",
+                        "title": "Vendas da Cafeteria",
                         "icon": "point_of_sale",
-                        "link": lambda r: reverse_lazy("admin:usuarios_vendacomercial_changelist"),
+                        "link": lambda r: f"{reverse_lazy('admin:usuarios_vendacomercial_changelist')}?modulo__exact=cafeteria",
                     },
                     {
-                        "title": "Contas Pendentes (Fiados)",
+                        "title": "Fiados / Pendências",
                         "icon": "pending_actions",
-                        "link": lambda r: reverse_lazy("admin:usuarios_pendenciacomercial_changelist"),
-                    },
-                    {
-                        "title": "Contas a Pagar",
-                        "icon": "request_quote",
-                        "link": lambda r: reverse_lazy("admin:usuarios_contapagarcomercial_changelist"),
-                    },
-                    {
-                        "title": "Entradas de Estoque",
-                        "icon": "move_to_inbox",
-                        "link": lambda r: reverse_lazy("admin:usuarios_entradaestoquecomercial_changelist"),
+                        "link": lambda r: f"{reverse_lazy('admin:usuarios_pendenciacomercial_changelist')}?modulo__exact=cafeteria",
                     },
                 ],
             },
             {
-                "title": "Sistema & Comunicação",
+                "title": "Livraria CDM",
                 "separator": True,
                 "items": [
                     {
-                        "title": "Fila de Mensagens / WhatsApp",
-                        "icon": "chat",
-                        "link": lambda r: reverse_lazy("admin:usuarios_filanotificacaopush_changelist"),
+                        "title": "Produtos da Livraria",
+                        "icon": "menu_book",
+                        "link": lambda r: f"{reverse_lazy('admin:usuarios_produtocomercial_changelist')}?modulo__exact=livraria",
                     },
                     {
-                        "title": "Configurações Globais",
-                        "icon": "settings",
+                        "title": "Vendas da Livraria",
+                        "icon": "sell",
+                        "link": lambda r: f"{reverse_lazy('admin:usuarios_vendacomercial_changelist')}?modulo__exact=livraria",
+                    },
+                    {
+                        "title": "Fiados / Pendências",
+                        "icon": "request_quote",
+                        "link": lambda r: f"{reverse_lazy('admin:usuarios_pendenciacomercial_changelist')}?modulo__exact=livraria",
+                    },
+                ],
+            },
+            {
+                "title": "Aplicativo Móvel & Controle",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Configurações do App",
+                        "icon": "app_settings_alt",
                         "link": lambda r: reverse_lazy("admin:usuarios_configuracaosistema_changelist"),
+                    },
+                    {
+                        "title": "Notificações Push / Whats",
+                        "icon": "notifications_active",
+                        "link": lambda r: reverse_lazy("admin:usuarios_filanotificacaopush_changelist"),
                     },
                 ],
             },
