@@ -1,65 +1,100 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-
+/* Sobrescrevendo variáveis nativas do Unfold/Tailwind para forçar a paleta Casa de Milagres */
 :root {
-  --cdm-azul: #1D14B3;
-  --cdm-ciano: #00A3E0;
-  --cdm-preto: #0A0A0C;
-  --cdm-bg-suave: #ECEFF4;
+    /* Fundo da tela (Cinza-azulado suave) */
+    --bg-base: #F0F4F8;
+    --bg-surface-1: #F0F4F8;
+    --bg-surface-2: #ffffff;
+    
+    /* Cores Primárias (Azul Escuro CDM) */
+    --color-primary-500: #1D14B3;
+    --color-primary-600: #160f8f;
+    --color-primary-700: #100b6b;
 }
 
-/* Força a cor de fundo em todas as camadas internas do Unfold */
-html, body, main, #main, 
-.bg-gray-50, .bg-slate-50, .bg-slate-100,
-div[class*="bg-gray-50"], div[class*="bg-slate-50"] {
-  background-color: var(--cdm-bg-suave) !important;
+/* Força o fundo da página inteira */
+body, main, #main {
+    background-color: #F0F4F8 !important;
 }
 
-/* Tipografia Global */
-html, body, table, input, button, select, textarea {
-  font-family: 'Plus Jakarta Sans', sans-serif !important;
+/* Menu Lateral (Sidebar) com o Azul Escuro da Igreja */
+aside, nav[class*="sidebar"] {
+    background-color: #1D14B3 !important;
+    border-right: none !important;
 }
 
-/* Ajuste da Logo */
-aside a img, header img {
-  max-height: 48px !important;
-  width: auto !important;
-  object-fit: contain !important;
+/* Aumentar Logo e Remover Margens (Canto Superior Esquerdo) */
+aside img, div[class*="sidebar"] img {
+    height: 90px !important;
+    max-height: 100px !important;
+    width: auto !important;
+    object-fit: contain !important;
+    transform: scale(1.15);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 5px;
 }
 
-/* Estilo de Tabelas */
+/* Textos da Sidebar Brancos */
+aside a, aside span, aside h3 {
+    color: #ffffff !important;
+}
+
+/* Ícones da Sidebar Azul Secundário (Ciano) */
+aside .material-symbols-outlined {
+    color: #00A3E0 !important;
+}
+
+/* Efeito Hover nos Menus da Sidebar */
+aside a:hover {
+    background-color: rgba(0, 163, 224, 0.2) !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+}
+
+/* Menu Ativo */
+aside a[aria-current="page"] {
+    background-color: #00A3E0 !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+}
+
+/* Cabeçalho Topo (Branco com Sombra) */
+header {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Deixar as Tabelas Unfold Redondas e com Títulos CDM */
 table {
-  background-color: #FFFFFF !important;
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03) !important;
+    border: none !important;
+    background-color: #ffffff !important;
 }
 
-table thead th {
-  background-color: #F8FAFC !important;
-  color: var(--cdm-azul) !important;
-  font-weight: 800 !important;
-  font-size: 0.72rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  border-bottom: 2px solid #E2E8F0 !important;
+thead th {
+    background-color: #1D14B3 !important;
+    color: #ffffff !important;
+    text-transform: uppercase !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+    font-size: 0.75rem !important;
 }
 
-/* Cards Customizados com Gradiente */
-.card-gradiente-azul {
-  background: linear-gradient(135deg, #1D14B3 0%, #3B82F6 100%) !important;
+/* Caixas dos Formulários Embutidos (Grades Curriculares, etc) */
+.inline-group {
+    background: #ffffff !important;
+    border-radius: 24px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid #E2E8F0 !important;
+    margin-bottom: 24px !important;
 }
-.card-gradiente-ciano {
-  background: linear-gradient(135deg, #00A3E0 0%, #06B6D4 100%) !important;
-}
-.card-gradiente-escuro {
-  background: linear-gradient(135deg, #0A0A0C 0%, #1D14B3 100%) !important;
-}
-.card-gradiente-verde {
-  background: linear-gradient(135deg, #059669 0%, #10B981 100%) !important;
-}
-.card-gradiente-roxo {
-  background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%) !important;
-}
-.card-gradiente-laranja {
-  background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%) !important;
+.inline-group h2 {
+    color: #1D14B3 !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    font-size: 14px !important;
 }

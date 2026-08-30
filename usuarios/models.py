@@ -142,13 +142,30 @@ class IdeModulo(models.Model):
     nome = models.CharField(max_length=255)
     duracaoNum = models.IntegerField(default=1)
     duracaoTipo = models.CharField(max_length=50, default='Semanas')
-    perguntas = models.JSONField(default=list, blank=True)
     limiteFaltas = models.IntegerField(default=3)
-    gradeCurricular = models.JSONField(default=list, blank=True)
     dataCriacao = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.nome
+
+# Tabela: Perguntas de Pré-Requisito do Módulo
+class IdeModuloPergunta(models.Model):
+    modulo = models.ForeignKey(IdeModulo, related_name='perguntas_rel', on_delete=models.CASCADE)
+    texto = models.CharField(max_length=255, verbose_name="Pergunta Exigida")
+
+    class Meta:
+        verbose_name = "Pergunta do Módulo"
+        verbose_name_plural = "Perguntas do Módulo"
+
+# Tabela: Grade Curricular (Aulas)
+class IdeModuloAula(models.Model):
+    modulo = models.ForeignKey(IdeModulo, related_name='aulas', on_delete=models.CASCADE)
+    tema = models.CharField(max_length=255, verbose_name="Tema da Aula")
+
+    class Meta:
+        verbose_name = "Aula da Grade Curricular"
+        verbose_name_plural = "Aulas da Grade Curricular"
+        ordering = ['id']
 
 class IdeFormulario(models.Model):
     moduloId = models.CharField(max_length=100)
@@ -161,11 +178,19 @@ class IdeFormulario(models.Model):
     horaInicio = models.CharField(max_length=20, blank=True, null=True)
     dataTermino = models.DateField(blank=True, null=True)
     horaTermino = models.CharField(max_length=20, blank=True, null=True)
-    perguntas = models.JSONField(default=list, blank=True)
     dataCriacao = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.titulo
+
+# Tabela: Perguntas Customizadas do Formulário
+class IdeFormularioPergunta(models.Model):
+    formulario = models.ForeignKey(IdeFormulario, related_name='perguntas_rel', on_delete=models.CASCADE)
+    texto = models.CharField(max_length=255, verbose_name="Pergunta Customizada")
+
+    class Meta:
+        verbose_name = "Pergunta do Formulário"
+        verbose_name_plural = "Perguntas Customizadas"
 
 class IdeTurma(models.Model):
     nome = models.CharField(max_length=255)
@@ -251,13 +276,32 @@ class FilaNotificacaoPush(models.Model):
 
 class Ministerio(models.Model):
     nome = models.CharField(max_length=255)
-    # Guarda o array de nomes dos líderes: ["João", "Maria"]
-    lideres = models.JSONField(default=list, blank=True)
-    # Guarda o array de objetos das funções: [{"id": "xyz", "nome": "Baterista", "voluntarios": ["id1", "id2"]}]
-    funcoes = models.JSONField(default=list, blank=True)
+    # lideres e funcoes <-- FORAM REMOVIDOS PARA VIRAREM TABELAS ABAIXO!
 
     class Meta:
         db_table = 'ministerios'
+        
+    def __str__(self):
+        return self.nome
+
+# NOVA TABELA PARA LÍDERES
+class MinisterioLider(models.Model):
+    ministerio = models.ForeignKey(Ministerio, related_name='lideres_rel', on_delete=models.CASCADE)
+    nome = models.CharField(max_length=255, verbose_name="Nome do Líder")
+
+    class Meta:
+        verbose_name = "Líder do Ministério"
+        verbose_name_plural = "Líderes"
+
+# NOVA TABELA PARA CARGOS
+class MinisterioFuncao(models.Model):
+    ministerio = models.ForeignKey(Ministerio, related_name='funcoes_rel', on_delete=models.CASCADE)
+    nome = models.CharField(max_length=255, verbose_name="Cargo / Função")
+    voluntarios = models.JSONField(default=list, blank=True, verbose_name="IDs dos Voluntários")
+
+    class Meta:
+        verbose_name = "Cargo / Função"
+        verbose_name_plural = "Cargos e Equipes"
 
 class Voluntario(models.Model):
     cadastroId = models.CharField(max_length=255, blank=True, null=True)
@@ -407,3 +451,28 @@ class JornadaCadastro(models.Model):
 
     def __str__(self):
         return f"{self.nome} - Etapa {self.etapa}"
+
+class MidiaBanner(models.Model):
+    nomeEvento = models.CharField(max_length=255)
+    linkAcao = models.URLField(max_length=1000, blank=True, null=True)
+    dataHorario = models.CharField(max_length=255, blank=True, null=True)
+    dataInicio = models.CharField(max_length=20)
+    horaInicio = models.CharField(max_length=10, default='00:00')
+    dataFim = models.CharField(max_length=20)
+    horaFim = models.CharField(max_length=10, default='23:59')
+    duracaoSegundos = models.IntegerField(default=4)
+    ordem = models.IntegerField(default=99)
+    imagemBase64 = models.URLField(max_length=1000)
+
+class MidiaPregacao(models.Model):
+    tipo = models.CharField(max_length=50, default='unica')
+    titulo = models.CharField(max_length=255)
+    pregador = models.CharField(max_length=255, blank=True, null=True)
+    imagemBase64 = models.URLField(max_length=1000)
+    audioUrl = models.URLField(max_length=1000, blank=True, null=True)
+    mensagens = models.JSONField(default=list, blank=True)
+    dataPublicacao = models.CharField(max_length=20, blank=True, null=True)
+    horaPublicacao = models.CharField(max_length=10, default='00:00')
+    timestampPublicacao = models.BigIntegerField(default=0)
+    plays = models.IntegerField(default=0)
+    dataCriacao = models.DateTimeField(auto_now_add=True)

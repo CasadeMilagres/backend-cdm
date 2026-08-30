@@ -1,117 +1,112 @@
 {% extends 'unfold/layouts/base.html' %}
 
 {% block content %}
-<div class="p-6 space-y-8 bg-[#ECEFF4] min-h-screen">
+<!-- Removemos as classes de fundo do Tailwind para que o CSS mande na cor -->
+<div class="p-6 space-y-8 w-full">
   
-  <!-- Banner Superior -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+  <!-- Banner Superior Moderno -->
+  <div class="cdm-panel p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-[#1D14B3]">
     <div>
-      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Painel de Gestão Geral</h1>
-      <p class="text-sm font-semibold text-slate-500 mt-1">Casa de Milagres — Indicadores em tempo real</p>
+      <h1 class="text-2xl font-black text-slate-900 tracking-tight">Painel de Gestão CDM</h1>
+      <p class="text-sm font-medium text-slate-500 mt-1">Acompanhamento ministerial, ensino e financeiro</p>
     </div>
     <div class="flex items-center gap-3">
-      <a href="/admin/usuarios/configuracaosistema/" class="inline-flex items-center gap-2 px-5 py-3 bg-[#1D14B3] hover:bg-[#00A3E0] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all">
+      <a href="/admin/usuarios/configuracaosistema/" class="cdm-card-membros inline-flex items-center gap-2 px-5 py-3 hover:scale-105 font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg transition-transform">
         <span class="material-symbols-outlined text-base">tune</span>
         Controle do App
       </a>
     </div>
   </div>
 
-  <!-- Cards de Impacto por Módulo -->
+  <!-- CARDS VIBRANTES (Agora usando as classes CSS corretas) -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
     
     <!-- Membros -->
-    <div class="card-gradiente-azul rounded-2xl p-5 text-white shadow-lg">
-      <div class="flex items-center justify-between opacity-90">
-        <span class="text-[10px] font-black uppercase tracking-widest">Membros</span>
-        <span class="material-symbols-outlined text-2xl">person</span>
+    <div class="cdm-card-membros rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="flex items-center justify-between opacity-90 relative z-10">
+        <span class="text-[10px] font-black uppercase tracking-widest text-white">Membros</span>
+        <span class="material-symbols-outlined text-2xl text-white">person</span>
       </div>
-      <p class="text-3xl font-black mt-2">{{ kpi.total_membros }}</p>
-      <span class="text-[11px] font-bold mt-2 block opacity-90">{{ kpi.total_lideres }} Líderes</span>
+      <p class="text-3xl font-black mt-2 relative z-10 text-white">{{ kpi.total_membros }}</p>
+      <span class="text-[11px] font-bold mt-2 block opacity-90 relative z-10 text-white">{{ kpi.total_lideres }} Líderes</span>
     </div>
 
     <!-- GCs -->
-    <div class="card-gradiente-escuro rounded-2xl p-5 text-white shadow-lg">
-      <div class="flex items-center justify-between opacity-90">
-        <span class="text-[10px] font-black uppercase tracking-widest">GCs Ativos</span>
-        <span class="material-symbols-outlined text-2xl">hub</span>
+    <div class="cdm-card-gcs rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="flex items-center justify-between opacity-90 relative z-10">
+        <span class="text-[10px] font-black uppercase tracking-widest text-white">GCs Ativos</span>
+        <span class="material-symbols-outlined text-2xl text-white">hub</span>
       </div>
-      <p class="text-3xl font-black mt-2">{{ kpi.total_gcs }}</p>
-      <span class="text-[11px] font-bold text-[#00A3E0] mt-2 block">{{ kpi.gcs_ocorridos }} Relatórios/Semana</span>
+      <p class="text-3xl font-black mt-2 relative z-10 text-white">{{ kpi.total_gcs }}</p>
+      <span class="text-[11px] font-bold mt-2 block opacity-90 relative z-10 text-white">{{ kpi.gcs_ocorridos }} Relatórios/Semana</span>
     </div>
 
     <!-- IDE -->
-    <div class="card-gradiente-ciano rounded-2xl p-5 text-white shadow-lg">
-      <div class="flex items-center justify-between opacity-90">
-        <span class="text-[10px] font-black uppercase tracking-widest">Ensino (IDE)</span>
-        <span class="material-symbols-outlined text-2xl">school</span>
+    <div class="cdm-card-ide rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="flex items-center justify-between opacity-90 relative z-10">
+        <span class="text-[10px] font-black uppercase tracking-widest text-white">Ensino (IDE)</span>
+        <span class="material-symbols-outlined text-2xl text-white">school</span>
       </div>
-      <p class="text-3xl font-black mt-2">{{ kpi.total_alunos_ide }}</p>
-      <span class="text-[11px] font-bold mt-2 block opacity-90">{{ kpi.turmas_ativas }} Turmas Ativas</span>
+      <p class="text-3xl font-black mt-2 relative z-10 text-white">{{ kpi.total_alunos_ide }}</p>
+      <span class="text-[11px] font-bold mt-2 block opacity-90 relative z-10 text-white">{{ kpi.turmas_ativas }} Turmas Ativas</span>
     </div>
 
     <!-- Jornada -->
-    <div class="card-gradiente-roxo rounded-2xl p-5 text-white shadow-lg">
-      <div class="flex items-center justify-between opacity-90">
-        <span class="text-[10px] font-black uppercase tracking-widest">Jornada</span>
-        <span class="material-symbols-outlined text-2xl">timeline</span>
+    <div class="cdm-card-jornada rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="flex items-center justify-between opacity-90 relative z-10">
+        <span class="text-[10px] font-black uppercase tracking-widest text-white">Jornada</span>
+        <span class="material-symbols-outlined text-2xl text-white">timeline</span>
       </div>
-      <p class="text-3xl font-black mt-2">{{ kpi.total_jornada }}</p>
-      <span class="text-[11px] font-bold mt-2 block opacity-90">{{ kpi.jornada_formados }} Formados 🎉</span>
+      <p class="text-3xl font-black mt-2 relative z-10 text-white">{{ kpi.total_jornada }}</p>
+      <span class="text-[11px] font-bold mt-2 block opacity-90 relative z-10 text-white">{{ kpi.jornada_formados }} Formados 🎉</span>
     </div>
 
     <!-- Comercial -->
-    <div class="card-gradiente-verde rounded-2xl p-5 text-white shadow-lg">
-      <div class="flex items-center justify-between opacity-90">
-        <span class="text-[10px] font-black uppercase tracking-widest">Vendas (Mês)</span>
-        <span class="material-symbols-outlined text-2xl">payments</span>
+    <div class="cdm-card-comercial rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="flex items-center justify-between opacity-90 relative z-10">
+        <span class="text-[10px] font-black uppercase tracking-widest text-white">Vendas (Mês)</span>
+        <span class="material-symbols-outlined text-2xl text-white">payments</span>
       </div>
-      <p class="text-2xl font-black mt-2">R$ {{ kpi.faturamento_mes|floatformat:2 }}</p>
-      <span class="text-[11px] font-bold mt-2 block opacity-90">Cafeteria & Livraria</span>
+      <p class="text-2xl font-black mt-2 relative z-10 text-white">R$ {{ kpi.faturamento_mes|floatformat:2 }}</p>
+      <span class="text-[11px] font-bold mt-2 block opacity-90 relative z-10 text-white">Faturamento Global</span>
     </div>
 
     <!-- Fiados -->
-    <div class="card-gradiente-laranja rounded-2xl p-5 text-white shadow-lg">
-      <div class="flex items-center justify-between opacity-90">
-        <span class="text-[10px] font-black uppercase tracking-widest">Fiados Abertos</span>
-        <span class="material-symbols-outlined text-2xl">pending_actions</span>
+    <div class="cdm-card-fiados rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div class="flex items-center justify-between opacity-90 relative z-10">
+        <span class="text-[10px] font-black uppercase tracking-widest text-white">Fiados Abertos</span>
+        <span class="material-symbols-outlined text-2xl text-white">pending_actions</span>
       </div>
-      <p class="text-2xl font-black mt-2">R$ {{ kpi.total_pendencias_abertas|floatformat:2 }}</p>
-      <span class="text-[11px] font-bold mt-2 block opacity-90">{{ kpi.qtd_pendencias_abertas }} Clientes Pendentes</span>
+      <p class="text-2xl font-black mt-2 relative z-10 text-white">R$ {{ kpi.total_pendencias_abertas|floatformat:2 }}</p>
+      <span class="text-[11px] font-bold mt-2 block opacity-90 relative z-10 text-white">{{ kpi.qtd_pendencias_abertas }} Pendências</span>
     </div>
 
   </div>
 
-  <!-- Painéis Detalhados por Setor -->
+  <!-- Painéis Detalhados com Toques de Cor -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     
     <!-- Detalhes GCs -->
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+    <div class="cdm-panel p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#1D14B3]">hub</span>
-          <h3 class="font-black text-slate-800 text-sm uppercase">Células & Relatórios</h3>
+          <div class="p-2 bg-blue-600 rounded-lg text-white flex items-center justify-center">
+            <span class="material-symbols-outlined text-sm">hub</span>
+          </div>
+          <h3 class="font-black text-slate-800 text-sm uppercase tracking-wide">Células & Relatórios</h3>
         </div>
-        <a href="/admin/usuarios/gclancamentosemanal/" class="text-xs font-bold text-[#00A3E0] hover:underline">Ver Todos</a>
+        <a href="/admin/usuarios/gclancamentosemanal/" class="text-xs font-bold text-blue-600 hover:underline">Ver Todos</a>
       </div>
       <div class="space-y-3">
         <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
           <span class="text-slate-600 font-medium">Lançamentos Realizados</span>
-          <span class="font-black text-emerald-600">{{ kpi.gcs_ocorridos }}</span>
-        </div>
-        <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
-          <span class="text-slate-600 font-medium">Lançamentos Não Ocorridos</span>
-          <span class="font-black text-rose-600">{{ kpi.gcs_nao_ocorridos }}</span>
+          <span class="font-black text-blue-700">{{ kpi.gcs_ocorridos }}</span>
         </div>
         <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
           <span class="text-slate-600 font-medium">Presença de Membros</span>
-          <span class="font-black text-slate-900">{{ kpi.total_membros_gc }}</span>
+          <span class="font-black text-blue-900">{{ kpi.total_membros_gc }}</span>
         </div>
-        <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
-          <span class="text-slate-600 font-medium">Visitantes da Semana</span>
-          <span class="font-black text-[#00A3E0]">{{ kpi.total_visitantes_gc }}</span>
-        </div>
-        <div class="flex justify-between items-center text-sm py-1.5 font-bold text-[#1D14B3] pt-1">
+        <div class="flex justify-between items-center text-sm py-1.5 font-bold text-blue-900 pt-1">
           <span>Testemunhos de Cura</span>
           <span class="text-base font-black">{{ kpi.total_curas_gc }}</span>
         </div>
@@ -119,55 +114,55 @@
     </div>
 
     <!-- Detalhes Ensino IDE -->
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+    <div class="cdm-panel p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#00A3E0]">school</span>
-          <h3 class="font-black text-slate-800 text-sm uppercase">Ensino (IDE)</h3>
+          <div class="p-2 bg-purple-600 rounded-lg text-white flex items-center justify-center">
+            <span class="material-symbols-outlined text-sm">school</span>
+          </div>
+          <h3 class="font-black text-slate-800 text-sm uppercase tracking-wide">Ensino (IDE)</h3>
         </div>
-        <a href="/admin/usuarios/ideturma/" class="text-xs font-bold text-[#00A3E0] hover:underline">Ver Turmas</a>
+        <a href="/admin/usuarios/ideturma/" class="text-xs font-bold text-purple-600 hover:underline">Ver Turmas</a>
       </div>
       <div class="space-y-3">
         <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
           <span class="text-slate-600 font-medium">Turmas em Andamento</span>
-          <span class="font-black text-slate-900">{{ kpi.turmas_ativas }}</span>
+          <span class="font-black text-purple-900">{{ kpi.turmas_ativas }}</span>
         </div>
         <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
           <span class="text-slate-600 font-medium">Alunos Matriculados</span>
-          <span class="font-black text-emerald-600">{{ kpi.total_alunos_ide }}</span>
+          <span class="font-black text-purple-700">{{ kpi.total_alunos_ide }}</span>
         </div>
-        <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
-          <span class="text-slate-600 font-medium">Alunos no Passo 4</span>
-          <span class="font-black text-[#1D14B3]">{{ kpi.jornada_passo_4 }}</span>
+        <div class="flex justify-between items-center text-sm py-1.5 font-bold text-purple-900 pt-1">
+          <span>Alunos no Passo 4</span>
+          <span class="text-base font-black">{{ kpi.jornada_passo_4 }}</span>
         </div>
       </div>
     </div>
 
     <!-- Detalhes Financeiros -->
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+    <div class="cdm-panel p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-slate-900">account_balance_wallet</span>
-          <h3 class="font-black text-slate-800 text-sm uppercase">Financeiro & Comercial</h3>
+          <div class="p-2 bg-emerald-600 rounded-lg text-white flex items-center justify-center">
+            <span class="material-symbols-outlined text-sm">account_balance_wallet</span>
+          </div>
+          <h3 class="font-black text-slate-800 text-sm uppercase tracking-wide">Financeiro Resumo</h3>
         </div>
-        <a href="/admin/usuarios/vendacomercial/" class="text-xs font-bold text-[#00A3E0] hover:underline">Ver Vendas</a>
+        <a href="/admin/usuarios/vendacomercial/" class="text-xs font-bold text-emerald-600 hover:underline">Vendas</a>
       </div>
       <div class="space-y-3">
         <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
-          <span class="text-slate-600 font-medium">Faturamento Comercial (Mês)</span>
-          <span class="font-black text-emerald-600">R$ {{ kpi.faturamento_mes|floatformat:2 }}</span>
+          <span class="text-slate-600 font-medium">Faturamento Comercial</span>
+          <span class="font-black text-emerald-700">R$ {{ kpi.faturamento_mes|floatformat:2 }}</span>
         </div>
         <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
-          <span class="text-slate-600 font-medium">Contas a Pagar (Pendente)</span>
+          <span class="text-slate-600 font-medium">Contas Pendentes</span>
           <span class="font-black text-rose-600">R$ {{ kpi.contas_a_pagar_pendentes|floatformat:2 }}</span>
         </div>
-        <div class="flex justify-between items-center text-sm py-1.5 border-b border-slate-50">
-          <span class="text-slate-600 font-medium">Valor Total em Fiados</span>
-          <span class="font-black text-amber-600">R$ {{ kpi.total_pendencias_abertas|floatformat:2 }}</span>
-        </div>
-        <div class="flex justify-between items-center text-sm py-1.5 pt-1">
-          <span class="text-slate-600 font-medium">Ofertas Arrecadadas (GCs)</span>
-          <span class="font-black text-[#1D14B3]">R$ {{ kpi.total_oferta_gc|floatformat:2 }}</span>
+        <div class="flex justify-between items-center text-sm py-1.5 font-bold text-emerald-900 pt-1">
+          <span>Ofertas (GCs)</span>
+          <span class="text-base font-black">R$ {{ kpi.total_oferta_gc|floatformat:2 }}</span>
         </div>
       </div>
     </div>

@@ -1,4 +1,6 @@
 import os
+import firebase_admin
+from firebase_admin import credentials
 import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
@@ -8,6 +10,13 @@ from django.templatetags.static import static
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+FIREBASE_KEY_PATH = os.path.join(BASE_DIR, 'firebase-key.json')
+if os.path.exists(FIREBASE_KEY_PATH) and not firebase_admin._apps:
+    cred = credentials.Certificate(FIREBASE_KEY_PATH)
+    firebase_admin.initialize_app(cred, {
+        'storageBucket': 'casa-de-milagres-d6193.firebasestorage.app'
+    })
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'chave-insegura-apenas-para-dev')
 

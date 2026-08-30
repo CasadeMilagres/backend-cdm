@@ -5,6 +5,9 @@ from .models import GcLancamentoSemanal, ConfiguracaoSistema, GrupoConexao
 from .models import IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala, FilaNotificacaoPush
 from .models import Ministerio, Voluntario, EventoMinisterio, EscalaMinisterio
 from .models import JornadaCadastro, ConfiguracaoSistema
+from .models import MidiaBanner, MidiaPregacao
+from .models import IdeModuloAula, MinisterioLider, MinisterioFuncao
+from .models import IdeModuloPergunta, IdeFormularioPergunta
 from .models import (
     ProdutoComercial, ClienteComercial, VendaComercial,
     PendenciaComercial, EntradaEstoqueComercial, ContaPagarComercial
@@ -38,14 +41,49 @@ class FormularioAvulsoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class IdeModuloSerializer(serializers.ModelSerializer):
+    gradeCurricular = serializers.SerializerMethodField()
+    perguntas = serializers.SerializerMethodField()
+
     class Meta:
         model = IdeModulo
         fields = '__all__'
 
+    def get_gradeCurricular(self, obj):
+        return [{"tema": a.tema} for a in obj.aulas.all()]
+
+    def get_perguntas(self, obj):
+        return [p.texto for p in obj.perguntas_rel.all()]
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        grade_data = request.data.get('gradeCurricular', []) if request else []
+        modulo = super().create(validated_data)
+        for aula in grade_data:
+            IdeModuloAula.objects.create(
+                modulo=modulo, tema=aula.get('tema', 'Nova Aula'), exercicioPerguntas=aula.get('exercicioPerguntas', [])
+            )
+        return modulo
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request and 'gradeCurricular' in request.data:
+            grade_data = request.data.get('gradeCurricular', [])
+            instance.aulas.all().delete()
+            for aula in grade_data:
+                IdeModuloAula.objects.create(
+                    modulo=instance, tema=aula.get('tema', 'Nova Aula'), exercicioPerguntas=aula.get('exercicioPerguntas', [])
+                )
+        return super().update(instance, validated_data)
+
 class IdeFormularioSerializer(serializers.ModelSerializer):
+    perguntas = serializers.SerializerMethodField()
+
     class Meta:
         model = IdeFormulario
         fields = '__all__'
+
+    def get_perguntas(self, obj):
+        return [p.texto for p in obj.perguntas_rel.all()]
 
 class IdeTurmaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -68,9 +106,41 @@ class FilaNotificacaoPushSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class MinisterioSerializer(serializers.ModelSerializer):
+    lideres = serializers.SerializerMethodField()
+    funcoes = serializers.SerializerMethodField()
+
     class Meta:
         model = Ministerio
         fields = '__all__'
+
+    def get_lideres(self, obj):
+        return [l.nome for l in obj.lideres_rel.all()]
+
+    def get_funcoes(self, obj):
+        return [{"id": str(f.id), "nome": f.nome, "voluntarios": f.voluntarios} for f in obj.funcoes_rel.all()]
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        minis = super().create(validated_data)
+        if request:
+            for l in request.data.get('lideres', []):
+                MinisterioLider.objects.create(ministerio=minis, nome=l)
+            for f in request.data.get('funcoes', []):
+                MinisterioFuncao.objects.create(ministerio=minis, nome=f.get('nome', 'Função'), voluntarios=f.get('voluntarios', []))
+        return minis
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request:
+            if 'lideres' in request.data:
+                instance.lideres_rel.all().delete()
+                for l in request.data.get('lideres', []):
+                    MinisterioLider.objects.create(ministerio=instance, nome=l)
+            if 'funcoes' in request.data:
+                instance.funcoes_rel.all().delete()
+                for f in request.data.get('funcoes', []):
+                    MinisterioFuncao.objects.create(ministerio=instance, nome=f.get('nome', 'Função'), voluntarios=f.get('voluntarios', []))
+        return super().update(instance, validated_data)
 
 class VoluntarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -127,4 +197,14 @@ class JornadaCadastroSerializer(serializers.ModelSerializer):
 class ConfiguracaoSistemaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConfiguracaoSistema
+        fields = '__all__'
+
+class MidiaBannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MidiaBanner
+        fields = '__all__'
+
+class MidiaPregacaoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MidiaPregacao
         fields = '__all__'

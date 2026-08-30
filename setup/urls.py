@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView # 1. Adicione esta importação
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from usuarios.views import MidiaBannerViewSet, MidiaPregacaoViewSet, upload_midia, deletar_midia
 from usuarios.views import (
     perfil_usuario,
     dashboard_stats,
@@ -57,6 +59,9 @@ router.register(r'comercial/pendencias', PendenciaComercialViewSet, basename='co
 router.register(r'comercial/entradas-estoque', EntradaEstoqueComercialViewSet, basename='comercial-entradas')
 router.register(r'comercial/contas-pagar', ContaPagarComercialViewSet, basename='comercial-contas-pagar')
 router.register(r'jornada', JornadaCadastroViewSet, basename='jornada')
+# Adicione ao router existente:
+router.register(r'midia_banners', MidiaBannerViewSet, basename='midia_banners')
+router.register(r'midia_pregacoes', MidiaPregacaoViewSet, basename='midia_pregacoes')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -66,4 +71,7 @@ urlpatterns = [
     path('api/dashboard/', dashboard_stats, name='dashboard_stats'),
     path('api/whatsapp/send/', enviar_whatsapp_view, name='whatsapp_send'), # Rota publica do WhatsApp
     path('api/', include(router.urls)),
+    path('favicon.ico', RedirectView.as_view(url='/static/img/logo-completa.png', permanent=True)),
+    path('api/upload/', upload_midia, name='upload_midia'),
+    path('api/upload/delete/', deletar_midia, name='deletar_midia'),
 ]

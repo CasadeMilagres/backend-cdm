@@ -1,3 +1,4 @@
+import os
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -10,6 +11,10 @@ from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
+from firebase_admin import storage as firebase_storage
+import uuid
+from .models import MidiaBanner, MidiaPregacao
+from .serializers import MidiaBannerSerializer, MidiaPregacaoSerializer
 # Aqui importamos todos os modelos que criamos no models.py
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db import models
@@ -85,6 +90,56 @@ def perfil_usuario(request):
         "isGlobalAdmin": user.is_superuser 
     }
     return Response(dados)
+
+class MidiaBannerViewSet(viewsets.ModelViewSet):
+    queryset = MidiaBanner.objects.all().order_by('ordem')
+    serializer_class = MidiaBannerSerializer
+    permission_classes = [AllowAny] # Permite leitura no app público
+
+class MidiaPregacaoViewSet(viewsets.ModelViewSet):
+    queryset = MidiaPregacao.objects.all().order_by('-timestampPublicacao')
+    serializer_class = MidiaPregacaoSerializer
+    permission_classes = [AllowAny] # Permite leitura no app público
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_midia(request):
+    if 'file' not in request.FILES:
+        return Response({'error': 'Nenhum arquivo enviado'}, status=400)
+    
+    arquivo = request.FILES['file']
+    pasta = request.data.get('pasta', 'uploads')
+    
+    try:
+        bucket = firebase_storage.bucket()
+        extensao = os.path.splitext(arquivo.name)[1]
+        nome_arquivo = f"{pasta}/{uuid.uuid4().hex}{extensao}"
+        
+        blob = bucket.blob(nome_arquivo)
+        blob.upload_from_file(arquivo.file, content_type=arquivo.content_type)
+        blob.make_public() # Torna a URL pública para o frontend acessar
+        
+        return Response({'url': blob.public_url})
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deletar_midia(request):
+    url = request.data.get('url')
+    if not url or 'firebasestorage' not in url:
+        return Response({'success': True}) # Ignora se não for do storage
+    
+    try:
+        # Extrai o caminho do arquivo da URL pública do Firebase
+        caminho = url.split('/o/')[1].split('?')[0].replace('%2F', '/')
+        bucket = firebase_storage.bucket()
+        blob = bucket.blob(caminho)
+        if blob.exists():
+            blob.delete()
+        return Response({'success': True})
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
 
 def dashboard_callback(request, context):
     cache_key = "cdm_dashboard_kpis"

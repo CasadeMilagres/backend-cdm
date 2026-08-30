@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from unfold.admin import ModelAdmin
+from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import display
 
 from .models import (
@@ -10,14 +10,13 @@ from .models import (
     ConfiguracaoSistema, IdeModulo, IdeFormulario, IdeTurma, IdeInscricao, IdeSala,
     FilaNotificacaoPush, Ministerio, Voluntario, EventoMinisterio, EscalaMinisterio,
     ProdutoComercial, ClienteComercial, VendaComercial, PendenciaComercial,
-    EntradaEstoqueComercial, ContaPagarComercial, JornadaCadastro
+    EntradaEstoqueComercial, ContaPagarComercial, JornadaCadastro,
+    IdeModuloAula, MinisterioLider, MinisterioFuncao, IdeModuloPergunta, IdeFormularioPergunta # Novas tabelas
 )
-
 
 @admin.register(Usuario)
 class UsuarioAdmin(BaseUserAdmin, ModelAdmin):
     ordering = ('email',)
-    
     list_display = ('nome_formatado', 'email_formatado', 'mostrar_perfis', 'mostrar_modulos', 'status_staff', 'status_superuser')
     search_fields = ('nome', 'email', 'celular')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
@@ -38,7 +37,7 @@ class UsuarioAdmin(BaseUserAdmin, ModelAdmin):
     @display(description="Nome Completo")
     def nome_formatado(self, obj):
         nome_tratado = (obj.nome or "Sem Nome").title()
-        return format_html("<span class='font-bold text-gray-900 dark:text-white'>{}</span>", nome_tratado)
+        return format_html("<span class='text-gray-900 dark:text-gray-200'>{}</span>", nome_tratado)
 
     @display(description="E-mail de Login")
     def email_formatado(self, obj):
@@ -70,7 +69,6 @@ class UsuarioAdmin(BaseUserAdmin, ModelAdmin):
             return mark_safe("<span class='cdm-badge cdm-badge-purple'>Superuser</span>")
         return mark_safe("<span class='cdm-status-inactive'>—</span>")
 
-
 @admin.register(CadastroGeral)
 class CadastroGeralAdmin(ModelAdmin):
     list_display = ('nome_formatado', 'celular', 'bairro', 'lider', 'gc', 'tag_lider', 'dataCadastro')
@@ -79,14 +77,13 @@ class CadastroGeralAdmin(ModelAdmin):
 
     @display(description="Nome")
     def nome_formatado(self, obj):
-        return format_html("<strong class='text-gray-900 dark:text-white'>{}</strong>", (obj.nome or "").title())
+        return format_html("<span class='text-gray-900 dark:text-gray-200'>{}</span>", (obj.nome or "").title())
 
     @display(description="Liderança")
     def tag_lider(self, obj):
         if obj.isLider == 'Sim':
             return mark_safe("<span class='cdm-badge cdm-badge-emerald'>Líder</span>")
         return mark_safe("<span class='cdm-status-inactive'>Membro</span>")
-
 
 @admin.register(JornadaCadastro)
 class JornadaCadastroAdmin(ModelAdmin):
@@ -96,7 +93,7 @@ class JornadaCadastroAdmin(ModelAdmin):
 
     @display(description="Nome")
     def nome_formatado(self, obj):
-        return format_html("<strong class='text-gray-900 dark:text-white'>{}</strong>", (obj.nome or "").title())
+        return format_html("<span class='text-gray-900 dark:text-gray-200'>{}</span>", (obj.nome or "").title())
 
     @display(description="Etapa da Jornada")
     def tag_etapa(self, obj):
@@ -117,13 +114,11 @@ class JornadaCadastroAdmin(ModelAdmin):
             return mark_safe("<span class='cdm-badge cdm-badge-emerald'>Concluído</span>")
         return mark_safe("<span class='cdm-status-inactive'>Em Trilha</span>")
 
-
 @admin.register(GrupoConexao)
 class GrupoConexaoAdmin(ModelAdmin):
     list_display = ('nome', 'lider', 'coordenador', 'bairro', 'dia_gc', 'horario')
     search_fields = ('nome', 'lider', 'coordenador', 'bairro')
     list_filter = ('dia_gc', 'generoGc', 'tipoGc', 'bairro')
-
 
 @admin.register(GcLancamentoSemanal)
 class GcLancamentoSemanalAdmin(ModelAdmin):
@@ -141,7 +136,6 @@ class GcLancamentoSemanalAdmin(ModelAdmin):
     def valor_oferta(self, obj):
         return f"R$ {obj.oferta:.2f}"
 
-
 @admin.register(IdeTurma)
 class IdeTurmaAdmin(ModelAdmin):
     list_display = ('nome', 'moduloNome', 'professor', 'ciclo', 'tag_status', 'qtd_alunos')
@@ -158,42 +152,63 @@ class IdeTurmaAdmin(ModelAdmin):
     def qtd_alunos(self, obj):
         return len(obj.alunos) if isinstance(obj.alunos, list) else 0
 
+# --- INLINES DO MÓDULO IDE ---
+class IdeModuloPerguntaInline(TabularInline):
+    model = IdeModuloPergunta
+    extra = 1
+
+class IdeModuloAulaInline(TabularInline):
+    model = IdeModuloAula
+    extra = 1
 
 @admin.register(IdeModulo)
 class IdeModuloAdmin(ModelAdmin):
     list_display = ('nome', 'duracaoNum', 'duracaoTipo', 'limiteFaltas')
     search_fields = ('nome',)
+    inlines = [IdeModuloPerguntaInline, IdeModuloAulaInline] # Grade Curricular e Perguntas Editáveis!
 
+# --- INLINES DO FORMULÁRIO IDE ---
+class IdeFormularioPerguntaInline(TabularInline):
+    model = IdeFormularioPergunta
+    extra = 1
 
+# --- INSCRIÇÕES (Agrupadas por Módulo) ---
 @admin.register(IdeInscricao)
 class IdeInscricaoAdmin(ModelAdmin):
-    list_display = ('alunoNome', 'moduloNome', 'celular', 'lider', 'dataInscricao')
-    search_fields = ('alunoNome', 'celular', 'moduloNome', 'lider')
-    list_filter = ('moduloNome', 'dataInscricao')
+    # Organiza a exibição: Módulo > Aluno
+    list_display = ('moduloNome', 'alunoNome', 'celular', 'lider', 'dataInscricao')
+    list_display_links = ('alunoNome',)
+    search_fields = ('alunoNome', 'celular', 'lider')
+    # O list_filter cria um menu lateral lindo no Unfold para você clicar no Curso e ver só os alunos dele
+    list_filter = ('moduloNome', 'dataInscricao', 'tipo')
+    ordering = ('moduloNome', 'alunoNome')
 
-
+# --- SALAS DE AULA (Agrupadas por Turma) ---
 @admin.register(IdeSala)
 class IdeSalaAdmin(ModelAdmin):
-    list_display = ('tema', 'turmaNome', 'data', 'horarioInicio', 'status')
+    # Organiza a exibição: Turma > Aula
+    list_display = ('turmaNome', 'tema', 'data', 'horarioInicio', 'status')
+    list_display_links = ('tema',)
     search_fields = ('tema', 'turmaNome')
-    list_filter = ('status', 'data')
+    # Filtro lateral por turma
+    list_filter = ('turmaNome', 'status')
+    ordering = ('turmaNome', '-data')
 
+# --- INLINES E ADMIN DE MINISTÉRIOS ---
+class MinisterioLiderInline(TabularInline):
+    model = MinisterioLider
+    extra = 1
+
+class MinisterioFuncaoInline(TabularInline):
+    model = MinisterioFuncao
+    extra = 1
+    fields = ('nome',) 
 
 @admin.register(Ministerio)
 class MinisterioAdmin(ModelAdmin):
-    list_display = ('nome', 'mostrar_lideres', 'qtd_funcoes')
+    list_display = ('nome',)
     search_fields = ('nome',)
-
-    @display(description="Liderança")
-    def mostrar_lideres(self, obj):
-        if isinstance(obj.lideres, list) and obj.lideres:
-            return ", ".join(obj.lideres)
-        return "-"
-
-    @display(description="Funções")
-    def qtd_funcoes(self, obj):
-        return len(obj.funcoes) if isinstance(obj.funcoes, list) else 0
-
+    inlines = [MinisterioLiderInline, MinisterioFuncaoInline]
 
 @admin.register(Voluntario)
 class VoluntarioAdmin(ModelAdmin):
@@ -205,7 +220,6 @@ class VoluntarioAdmin(ModelAdmin):
     def qtd_ministerios(self, obj):
         return f"{len(obj.ministerios)} ministérios" if isinstance(obj.ministerios, list) else "0"
 
-
 @admin.register(EscalaMinisterio)
 class EscalaMinisterioAdmin(ModelAdmin):
     list_display = ('evento', 'ministerioNome', 'data', 'qtd_escalados')
@@ -215,7 +229,6 @@ class EscalaMinisterioAdmin(ModelAdmin):
     @display(description="Escalados")
     def qtd_escalados(self, obj):
         return len(obj.escalados) if isinstance(obj.escalados, list) else 0
-
 
 @admin.register(ProdutoComercial)
 class ProdutoComercialAdmin(ModelAdmin):
@@ -231,7 +244,6 @@ class ProdutoComercialAdmin(ModelAdmin):
     def preco_venda_fmt(self, obj):
         return f"R$ {obj.precoVenda:.2f}"
 
-
 @admin.register(VendaComercial)
 class VendaComercialAdmin(ModelAdmin):
     list_display = ('clienteId', 'modulo', 'valor_total_fmt', 'formaPagamento', 'dataVenda')
@@ -242,7 +254,6 @@ class VendaComercialAdmin(ModelAdmin):
     def valor_total_fmt(self, obj):
         return f"R$ {obj.valorTotal:.2f}"
 
-
 @admin.register(PendenciaComercial)
 class PendenciaComercialAdmin(ModelAdmin):
     list_display = ('clienteId', 'modulo', 'valor_total_fmt', 'formaPagamento', 'dataVenda')
@@ -252,7 +263,6 @@ class PendenciaComercialAdmin(ModelAdmin):
     @display(description="Valor em Aberto")
     def valor_total_fmt(self, obj):
         return f"R$ {obj.valorTotal:.2f}"
-
 
 @admin.register(ContaPagarComercial)
 class ContaPagarComercialAdmin(ModelAdmin):
@@ -270,39 +280,34 @@ class ContaPagarComercialAdmin(ModelAdmin):
             return mark_safe("<span class='cdm-badge cdm-badge-emerald'>Pago</span>")
         return mark_safe("<span class='cdm-badge cdm-badge-amber'>Pendente</span>")
 
-
 @admin.register(ClienteComercial)
 class ClienteComercialAdmin(ModelAdmin):
     list_display = ('nome', 'modulo', 'telefone', 'email')
     search_fields = ('nome', 'telefone')
-
 
 @admin.register(EntradaEstoqueComercial)
 class EntradaEstoqueComercialAdmin(ModelAdmin):
     list_display = ('produtoNome', 'modulo', 'quantidadeAdicionada', 'dataEntrada')
     search_fields = ('produtoNome',)
 
-
 @admin.register(FilaNotificacaoPush)
 class FilaNotificacaoPushAdmin(ModelAdmin):
     list_display = ('titulo', 'tipo', 'publicoAlvo', 'status', 'dataDisparo')
     search_fields = ('titulo', 'alunoNome')
 
-
 @admin.register(FormularioAvulso)
 class FormularioAvulsoAdmin(ModelAdmin):
     list_display = ('titulo', 'criadoPor', 'dataCriacao')
 
-
 @admin.register(IdeFormulario)
 class IdeFormularioAdmin(ModelAdmin):
     list_display = ('titulo', 'status', 'ciclo')
-
+    list_filter = ('status', 'ciclo')
+    inlines = [IdeFormularioPerguntaInline] # Perguntas editáveis no Admin!
 
 @admin.register(EventoMinisterio)
 class EventoMinisterioAdmin(ModelAdmin):
     list_display = ('nome',)
-
 
 @admin.register(ConfiguracaoSistema)
 class ConfiguracaoSistemaAdmin(ModelAdmin):
