@@ -22,7 +22,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'chave-insegura-apenas-para-dev')
 
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'gestao.casademilagres.com']
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -326,4 +326,5 @@ ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
     'https://backend-cdm-api-934434685854.us-central1.run.app',
     'https://*.run.app',
+    'https://gestao.casademilagres.com'
 ]
