@@ -8,6 +8,7 @@ from .models import JornadaCadastro, ConfiguracaoSistema
 from .models import MidiaBanner, MidiaPregacao
 from .models import IdeModuloAula, MinisterioLider, MinisterioFuncao
 from .models import IdeModuloPergunta, IdeFormularioPergunta
+from .models import IdeTurmaAluno
 from .models import (
     ProdutoComercial, ClienteComercial, VendaComercial,
     PendenciaComercial, EntradaEstoqueComercial, ContaPagarComercial
@@ -85,19 +86,9 @@ class IdeFormularioSerializer(serializers.ModelSerializer):
     def get_perguntas(self, obj):
         return [p.texto for p in obj.perguntas_rel.all()]
 
-class IdeTurmaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = IdeTurma
-        fields = '__all__'
-
 class IdeInscricaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = IdeInscricao
-        fields = '__all__'
-
-class IdeSalaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = IdeSala
         fields = '__all__'
 
 class FilaNotificacaoPushSerializer(serializers.ModelSerializer):
@@ -208,3 +199,51 @@ class MidiaPregacaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = MidiaPregacao
         fields = '__all__'
+
+class IdeTurmaSerializer(serializers.ModelSerializer):
+    alunos = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IdeTurma
+        fields = '__all__'
+
+    def get_alunos(self, obj):
+        return [{"inscricaoId": a.inscricaoId, "alunoId": a.inscricaoId, "alunoNome": a.alunoNome, "celular": a.celular} for a in obj.alunos_rel.all()]
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        turma = super().create(validated_data)
+        if request and 'alunos' in request.data:
+            for a in request.data['alunos']:
+                IdeTurmaAluno.objects.create(turma=turma, inscricaoId=a.get('inscricaoId'), alunoNome=a.get('alunoNome'), celular=a.get('celular'))
+        return turma
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request and 'alunos' in request.data:
+            instance.alunos_rel.all().delete()
+            for a in request.data['alunos']:
+                IdeTurmaAluno.objects.create(turma=instance, inscricaoId=a.get('inscricaoId'), alunoNome=a.get('alunoNome'), celular=a.get('celular'))
+        return super().update(instance, validated_data)
+
+class IdeSalaSerializer(serializers.ModelSerializer):
+    turmaId = serializers.SerializerMethodField()
+    turmaNome = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IdeSala
+        fields = '__all__'
+
+    def get_turmaId(self, obj):
+        return str(obj.turma.id) if obj.turma else None
+
+    def get_turmaNome(self, obj):
+        return obj.turma.nome if obj.turma else None
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and 'turmaId' in request.data:
+            from .models import IdeTurma
+            turma = IdeTurma.objects.filter(id=request.data['turmaId']).first()
+            validated_data['turma'] = turma
+        return super().create(validated_data)

@@ -11,7 +11,8 @@ from .models import (
     FilaNotificacaoPush, Ministerio, Voluntario, EventoMinisterio, EscalaMinisterio,
     ProdutoComercial, ClienteComercial, VendaComercial, PendenciaComercial,
     EntradaEstoqueComercial, ContaPagarComercial, JornadaCadastro,
-    IdeModuloAula, MinisterioLider, MinisterioFuncao, IdeModuloPergunta, IdeFormularioPergunta # Novas tabelas
+    IdeModuloAula, IdeModuloPergunta, IdeFormularioPergunta, 
+    IdeTurmaAluno, MinisterioLider, MinisterioFuncao
 )
 
 @admin.register(Usuario)
@@ -136,23 +137,7 @@ class GcLancamentoSemanalAdmin(ModelAdmin):
     def valor_oferta(self, obj):
         return f"R$ {obj.oferta:.2f}"
 
-@admin.register(IdeTurma)
-class IdeTurmaAdmin(ModelAdmin):
-    list_display = ('nome', 'moduloNome', 'professor', 'ciclo', 'tag_status', 'qtd_alunos')
-    search_fields = ('nome', 'professor', 'moduloNome')
-    list_filter = ('status', 'isEspera', 'moduloNome')
-
-    @display(description="Status")
-    def tag_status(self, obj):
-        if obj.status == 'Ativa':
-            return mark_safe("<span class='cdm-badge cdm-badge-emerald'>Ativa</span>")
-        return mark_safe("<span class='cdm-badge cdm-badge-muted'>Encerrada</span>")
-
-    @display(description="Alunos")
-    def qtd_alunos(self, obj):
-        return len(obj.alunos) if isinstance(obj.alunos, list) else 0
-
-# --- INLINES DO MÓDULO IDE ---
+# --- INLINES E ADMIN DO MÓDULO IDE ---
 class IdeModuloPerguntaInline(TabularInline):
     model = IdeModuloPergunta
     extra = 1
@@ -160,39 +145,63 @@ class IdeModuloPerguntaInline(TabularInline):
 class IdeModuloAulaInline(TabularInline):
     model = IdeModuloAula
     extra = 1
+    fields = ('tema',)
 
 @admin.register(IdeModulo)
 class IdeModuloAdmin(ModelAdmin):
     list_display = ('nome', 'duracaoNum', 'duracaoTipo', 'limiteFaltas')
     search_fields = ('nome',)
-    inlines = [IdeModuloPerguntaInline, IdeModuloAulaInline] # Grade Curricular e Perguntas Editáveis!
+    inlines = [IdeModuloPerguntaInline, IdeModuloAulaInline]
 
-# --- INLINES DO FORMULÁRIO IDE ---
+# --- INLINES E ADMIN DO FORMULÁRIO IDE ---
 class IdeFormularioPerguntaInline(TabularInline):
     model = IdeFormularioPergunta
     extra = 1
 
-# --- INSCRIÇÕES (Agrupadas por Módulo) ---
+@admin.register(IdeFormulario)
+class IdeFormularioAdmin(ModelAdmin):
+    list_display = ('titulo', 'status', 'ciclo')
+    list_filter = ('status', 'ciclo')
+    inlines = [IdeFormularioPerguntaInline]
+
+# --- INLINES E ADMIN DAS TURMAS IDE ---
+class IdeTurmaAlunoInline(TabularInline):
+    model = IdeTurmaAluno
+    extra = 0 
+    fields = ('alunoNome', 'celular')
+
+class IdeSalaInline(TabularInline):
+    model = IdeSala
+    extra = 0
+    fields = ('tema', 'data', 'horarioInicio', 'status')
+    show_change_link = True
+
+@admin.register(IdeTurma)
+class IdeTurmaAdmin(ModelAdmin):
+    list_display = ('nome', 'moduloNome', 'professor', 'ciclo', 'tag_status')
+    search_fields = ('nome', 'professor', 'moduloNome')
+    list_filter = ('status', 'isEspera', 'moduloNome')
+    inlines = [IdeSalaInline, IdeTurmaAlunoInline] 
+
+    @display(description="Status")
+    def tag_status(self, obj):
+        if obj.status == 'Ativa':
+            return mark_safe("<span class='cdm-badge cdm-badge-emerald'>Ativa</span>")
+        return mark_safe("<span class='cdm-badge cdm-badge-muted'>Encerrada</span>")
+
 @admin.register(IdeInscricao)
 class IdeInscricaoAdmin(ModelAdmin):
-    # Organiza a exibição: Módulo > Aluno
     list_display = ('moduloNome', 'alunoNome', 'celular', 'lider', 'dataInscricao')
     list_display_links = ('alunoNome',)
     search_fields = ('alunoNome', 'celular', 'lider')
-    # O list_filter cria um menu lateral lindo no Unfold para você clicar no Curso e ver só os alunos dele
     list_filter = ('moduloNome', 'dataInscricao', 'tipo')
     ordering = ('moduloNome', 'alunoNome')
 
-# --- SALAS DE AULA (Agrupadas por Turma) ---
 @admin.register(IdeSala)
 class IdeSalaAdmin(ModelAdmin):
-    # Organiza a exibição: Turma > Aula
-    list_display = ('turmaNome', 'tema', 'data', 'horarioInicio', 'status')
-    list_display_links = ('tema',)
-    search_fields = ('tema', 'turmaNome')
-    # Filtro lateral por turma
-    list_filter = ('turmaNome', 'status')
-    ordering = ('turmaNome', '-data')
+    list_display = ('tema', 'turma', 'data', 'horarioInicio', 'status')
+    search_fields = ('tema', 'turma__nome')
+    list_filter = ('turma__nome', 'status')
 
 # --- INLINES E ADMIN DE MINISTÉRIOS ---
 class MinisterioLiderInline(TabularInline):
@@ -298,12 +307,6 @@ class FilaNotificacaoPushAdmin(ModelAdmin):
 @admin.register(FormularioAvulso)
 class FormularioAvulsoAdmin(ModelAdmin):
     list_display = ('titulo', 'criadoPor', 'dataCriacao')
-
-@admin.register(IdeFormulario)
-class IdeFormularioAdmin(ModelAdmin):
-    list_display = ('titulo', 'status', 'ciclo')
-    list_filter = ('status', 'ciclo')
-    inlines = [IdeFormularioPerguntaInline] # Perguntas editáveis no Admin!
 
 @admin.register(EventoMinisterio)
 class EventoMinisterioAdmin(ModelAdmin):

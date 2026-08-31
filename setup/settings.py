@@ -26,6 +26,10 @@ ALLOWED_HOSTS = ['*']
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'https://casa-de-milagres-d6193.web.app',
+    'https://casa-de-milagres-d6193.firebaseapp.com'
+]
 
 INSTALLED_APPS = [
     # 🔥 Unfold deve ser o primeiro
@@ -47,30 +51,21 @@ INSTALLED_APPS = [
 ]
 
 UNFOLD = {
-    "SITE_TITLE": "Casa de Milagres",
+    "SITE_TITLE": "Painel - Casa de Milagres",
     "SITE_HEADER": "Casa de Milagres",
-    "SITE_URL": "/admin/",
-    "SITE_LOGO": {
-        "light": lambda request: static("img/logo-completa.png"),
-        "dark": lambda request: static("img/logo-completa.png"),
-    },
-    "DASHBOARD_CALLBACK": "usuarios.views.dashboard_callback",
-    "STYLES": [
-        lambda request: static("css/custom.css"),
-    ],
+    "SITE_ICON": lambda request: static("img/logo-completa.png"),
     "COLORS": {
         "primary": {
-            "50": "238 242 255",
-            "100": "224 231 255",
-            "200": "199 210 254",
-            "300": "0 163 224",
-            "400": "0 130 200",
-            "500": "29 20 179",
-            "600": "24 16 150",
-            "700": "20 14 122",
-            "800": "16 12 99",
-            "900": "10 10 12",
-            "950": "5 5 7",
+            "50": "240 244 248",
+            "100": "217 226 236",
+            "200": "188 204 220",
+            "300": "159 181 204",
+            "400": "0 163 224",    # Ciano CDM
+            "500": "29 20 179",    # Azul Escuro CDM
+            "600": "22 15 140",
+            "700": "17 11 110",
+            "800": "11 8 75",
+            "900": "6 4 45",
         },
     },
     "SIDEBAR": {

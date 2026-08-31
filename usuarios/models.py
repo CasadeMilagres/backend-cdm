@@ -193,26 +193,37 @@ class IdeFormularioPergunta(models.Model):
         verbose_name_plural = "Perguntas Customizadas"
 
 class IdeTurma(models.Model):
-    nome = models.CharField(max_length=255)
+    nome = models.CharField(max_length=255, verbose_name="Nome da Turma")
     codigoUnico = models.CharField(max_length=50, blank=True, null=True)
     moduloId = models.CharField(max_length=100)
     moduloNome = models.CharField(max_length=255, blank=True, null=True)
     ciclo = models.CharField(max_length=100, blank=True, null=True)
     professor = models.CharField(max_length=255, blank=True, null=True)
-    status = models.CharField(max_length=50, default='Ativa')
-    isEspera = models.BooleanField(default=False)
-    formularioId = models.CharField(max_length=100, blank=True, null=True)
-    diaInicio = models.DateField(blank=True, null=True)
-    horarioInicio = models.CharField(max_length=50, blank=True, null=True)
-    whatsappGrupo = models.URLField(max_length=1000, blank=True, null=True)
-    alunos = models.JSONField(default=list, blank=True)
-    removidos = models.JSONField(default=list, blank=True)
-    abonosReprovacao = models.JSONField(default=list, blank=True)
+    status = models.CharField(max_length=50, default='Ativa', choices=[('Ativa', '🟢 Ativa'), ('Encerrada', '🔴 Encerrada')])
+    isEspera = models.BooleanField(default=False, verbose_name="Fila de Espera?")
+    diaInicio = models.DateField(blank=True, null=True, verbose_name="Data de Início")
+    horarioInicio = models.CharField(max_length=50, blank=True, null=True, verbose_name="Horário")
+    whatsappGrupo = models.URLField(max_length=1000, blank=True, null=True, verbose_name="Link do Grupo")
     dataCriacao = models.DateTimeField(auto_now_add=True)
     dataEncerramento = models.DateTimeField(blank=True, null=True)
 
+    class Meta:
+        verbose_name = "Turma do IDE"
+        verbose_name_plural = "Turmas do IDE"
+
     def __str__(self):
         return f"{self.nome} ({self.moduloNome})"
+
+# NOVA TABELA: Alunos vinculados à Turma
+class IdeTurmaAluno(models.Model):
+    turma = models.ForeignKey(IdeTurma, related_name='alunos_rel', on_delete=models.CASCADE)
+    inscricaoId = models.CharField(max_length=100, blank=True, null=True)
+    alunoNome = models.CharField(max_length=255, verbose_name="Nome do Aluno")
+    celular = models.CharField(max_length=50, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Aluno Matriculado"
+        verbose_name_plural = "Alunos da Turma"
 
 class IdeInscricao(models.Model):
     formularioId = models.CharField(max_length=100, blank=True, null=True)
@@ -235,25 +246,21 @@ class IdeInscricao(models.Model):
         return f"{self.alunoNome} - {self.moduloNome}"
 
 class IdeSala(models.Model):
-    turmaId = models.CharField(max_length=100)
-    turmaNome = models.CharField(max_length=255, blank=True, null=True)
-    moduloId = models.CharField(max_length=100, blank=True, null=True)
-    tema = models.CharField(max_length=255)
-    data = models.CharField(max_length=50)
-    diaSemana = models.CharField(max_length=50, blank=True, null=True)
-    horarioInicio = models.CharField(max_length=50, blank=True, null=True)
-    horarioFim = models.CharField(max_length=50, blank=True, null=True)
-    status = models.CharField(max_length=50, default='Agendada')
+    turma = models.ForeignKey(IdeTurma, related_name='aulas_rel', on_delete=models.CASCADE, null=True)
+    tema = models.CharField(max_length=255, verbose_name="Tema da Aula")
+    data = models.CharField(max_length=50, verbose_name="Data da Aula")
+    horarioInicio = models.CharField(max_length=50, blank=True, null=True, verbose_name="Início")
+    horarioFim = models.CharField(max_length=50, blank=True, null=True, verbose_name="Término")
+    status = models.CharField(max_length=50, default='Agendada', choices=[('Agendada', '🟡 Agendada'), ('Concluída', '🟢 Concluída')])
     presencas = models.JSONField(default=dict, blank=True)
-    justificativas = models.JSONField(default=dict, blank=True)
-    exercicioAtivo = models.BooleanField(default=False)
-    exercicioPerguntas = models.JSONField(default=list, blank=True)
     notasExercicio = models.JSONField(default=dict, blank=True)
-    respostasExercicio = models.JSONField(default=dict, blank=True)
-    dataCriacao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Diário de Aula"
+        verbose_name_plural = "Diários de Aulas"
 
     def __str__(self):
-        return f"{self.tema} - {self.turmaNome}"
+        return f"{self.tema} - {self.data}"
 
 class FilaNotificacaoPush(models.Model):
     tipo = models.CharField(max_length=100, default='comunicado_ensino')
